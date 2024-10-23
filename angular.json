@@ -46,7 +46,7 @@
                 }
               ],
               "outputHashing": "all",
-              "baseHref": "/tc-helicon-perform-ve-editor/"  // Spostato qui
+              "baseHref": "/tc-helicon-perform-ve-editor/"  
             },
             "development": {
               "optimization": false,
