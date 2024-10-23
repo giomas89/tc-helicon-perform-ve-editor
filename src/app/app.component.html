@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il tuo titolo</title>
+
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Preconnect a Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="google-font.css">
+</head>
+<body>
+    <div style="background-color:#f5d26c; padding:16px; border-radius:10px">
+        <h3 style="font-weight: bold; text-align: center;">TC Helicon Perform VE</h3>
+        
+        <div style="text-align:center">
+            <select (change)="onDeviceSelected($event)">
+                <option *ngFor="let output of midiOutputs" [value]="output.id" [selected]="output.name === 'Perform-VE MIDI Out'">
+                    {{ output.name }}
+                </option>
+            </select>
+
+            <select (change)="onInputDeviceSelected($event)">
+                <option *ngFor="let input of midiInputs" [value]="input.id" [selected]="input.name === 'Perform-VE MIDI In'">
+                    {{ input.name }}
+                </option>
+            </select>
+        </div>
+
+        <select [(ngModel)]="selectedChannel" style="margin: 16px auto; display: block; width: 200px;">
+            <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
+                Channel {{ i + 1 }}
+            </option>
+        </select>
+
+        <div style="width: 500px; display: flex; justify-content: space-between; margin: 0 auto;">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <button class="toggle-button" [ngClass]="{'on': isDoubleOn, 'off': !isDoubleOn}" (click)="toggleDouble()">
+                    Double
+                </button>
+                
+                <button class="toggle-button" [ngClass]="{'on': isMorphOn, 'off': !isMorphOn}" (click)="toggleMorph()">
+                    Morph
+                </button>
+                
+                <button class="toggle-button" [ngClass]="{'on': isHardTuneOn, 'off': !isHardTuneOn}" (click)="toggleHardTune()">
+                    HardTune
+                </button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <button class="toggle-button" [ngClass]="{'on': isXfxOn, 'off': !isXfxOn}" (click)="toggleXfx()">
+                    XFX
+                </button>
+                
+                <button class="toggle-button" [ngClass]="{'on': isEchoOn, 'off': !isEchoOn}" (click)="toggleEcho()">
+                    Echo
+                </button>
+                
+                <button class="toggle-button" [ngClass]="{'on': isFilterOn, 'off': !isFilterOn}" (click)="toggleFilter()">
+                    Filter
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <h2>Scegli la tonalità (CC 19):</h2>
+            <div class="tone-buttons">
+                <button *ngFor="let tone of tones" 
+                [ngClass]="{'active': selectedTone?.value === tone.value}"
+                (click)="onToneSelect(tone)">
+                    {{ tone.name }}
+                </button>
+            </div>
+            <p>Tonalità selezionata: {{ selectedTone?.name || 'Nessuna selezione' }}</p>
+        </div>
+    </div>
+</body>
+</html>

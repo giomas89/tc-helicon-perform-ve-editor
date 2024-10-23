@@ -1,0 +1,69 @@
+body{
+    font-family: "Poppins", sans-serif; /* Imposta il font per tutto il body */
+    font-size: 16px; /* Imposta la dimensione del font */
+    line-height: 1.5; /* Imposta l'altezza della linea */
+    color: #333; /* Imposta il colore del testo */
+    background-color: #f8f8f8; /* Imposta il colore di sfondo */
+    margin: 0; /* Rimuove il margine predefinito */
+    padding: 20px; /* Aggiunge padding */
+}
+
+.toggle-button {
+    height: 64px;
+    width: 150px;
+    border: 2px solid black; /* Outline color */
+    color: black; /* Default text color */
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: #fff; /* Default background */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; /* Transition for background and text color */
+}
+
+.toggle-button.on {
+    background-color: #d15656; /* Color when ON */
+    border: 2px solid #993434; /* Remove outline when ON */
+    color: white; /* Text color when ON */
+}
+
+.toggle-button.off {
+    background-color: #fff; /* Color when OFF */
+    color: black; /* Text color when OFF */
+}
+
+.toggle-button:hover {
+    background-color: lightcoral; /* Light red color on hover */
+    color: white; /* Change text color to white on hover */
+}
+
+
+  .tone-buttons {
+    display: flex; /* Usa flexbox per allineare i bottoni in fila */
+  }
+  
+  .tone-buttons button {
+    width: 100px; /* Larghezza dei bottoni */
+    height: 50px; /* Altezza dei bottoni */
+    border: 2px solid black; /* Outline nero quando non è attivo */
+    background-color: #fff; /* Sfondo trasparente */
+    color: black; /* Testo nero quando non è attivo */
+    cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+    transition: background-color 0.3s, color 0.3s; /* Transizione per lo sfondo e il colore del testo */
+    margin-right: -2px; /* Rimuovi il margine destro per evitare la somma dei bordi */
+  }
+  
+  .tone-buttons button:last-child {
+    margin-right: 0; /* Non applicare il margine all'ultimo bottone */
+  }
+  
+  .tone-buttons button:hover {
+    background-color: lightgreen; /* Sfondo verde chiaro quando il cursore è sopra */
+  }
+  
+  .tone-buttons button.active {
+    background-color: green; /* Sfondo verde quando il bottone è attivo */
+    border: 2px solid rgb(5, 70, 5); 
+    color: white; /* Testo bianco quando è attivo */
+  }
+  
