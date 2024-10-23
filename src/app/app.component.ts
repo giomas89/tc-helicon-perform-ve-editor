@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WebMidi, Output, Input } from 'webmidi'; 
-import { CommonModule } from '@angular/common'; 
-import { FormsModule } from '@angular/forms'; 
+import { WebMidi, Output, Input } from 'webmidi';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 
 // Risorse CC
@@ -30,19 +30,24 @@ export class AppComponent implements OnInit {
   tones: Tone[] = []; 
   selectedChannel: number;
   selectedTone: Tone | null = null; 
-  isHardTuneOn: boolean = false;
-  isMorphOn: boolean = false;
-  isDoubleOn: boolean = false;
-  isXfxOn: boolean = false;
-  isEchoOn: boolean = false;
-  isFilterOn: boolean = false;
-  hardTuneKey: number = 0;
-  importoHardTune: number = 0;
+
+  // Stato degli effetti
+  EffectStates = {
+    isHardTuneOn: false,
+    isMorphOn: false,
+    isDoubleOn: false,
+    isXfxOn: false,
+    isEchoOn: false,
+    isFilterOn: false,
+  };
+
+  // Program attivo
+  activeProgram: number | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {
     this.selectedChannel = 1; 
   }
-  
+
   ngOnInit(): void {
     this.enableWebMidi();
     this.initializeTones(); 
@@ -93,7 +98,7 @@ export class AppComponent implements OnInit {
     } else {
         console.warn('No MIDI Input found for "Perform-VE" or "Perform-VE MIDI In"');
     }
-}
+  }
 
   updateControlStates(controllerNumber: number, value: number) {
     switch (controllerNumber) {
@@ -105,26 +110,23 @@ export class AppComponent implements OnInit {
         }
         break;
       case 51:
-        this.isDoubleOn = value === 64;
+        this.EffectStates.isDoubleOn = value === 64;
         break;
       case 52:
-        this.isMorphOn = value === 64;
+        this.EffectStates.isMorphOn = value === 64;
         break;
       case 53:
-        this.isHardTuneOn = value === 64;
+        this.EffectStates.isHardTuneOn = value === 64;
         break;
       case 54:
-        this.isXfxOn = value === 64;
+        this.EffectStates.isXfxOn = value === 64;
         break;
       case 55:
-        this.isEchoOn = value === 64;
+        this.EffectStates.isEchoOn = value === 64;
         break;
       case 56:
-        this.isFilterOn = value === 64;
+        this.EffectStates.isFilterOn = value === 64;
         break;
-      // default:
-      //   console.warn(`Unhandled Controller Number: ${controllerNumber} with value: ${value}`);
-      //   break;
     }
   }
 
@@ -140,29 +142,37 @@ export class AppComponent implements OnInit {
     console.log(`Selected input device ID: ${selectedId}`);
   }
 
-  toggleDouble() {
-    this.isDoubleOn = toggleDouble(this.midiOutput, this.isDoubleOn, this.selectedChannel);
-  }
+  toggleEffect(effect: keyof typeof this.EffectStates) {
+    // Invertire lo stato dell'effetto
+    this.EffectStates[effect] = !this.EffectStates[effect];
+    
+    // Determinare il valore da inviare (127 per ON, 0 per OFF)
+    const value = this.EffectStates[effect] ? 127 : 0;
 
-  toggleMorph() {
-    this.isMorphOn = toggleMorph(this.midiOutput, this.isMorphOn, this.selectedChannel);
-  }
+    // Inviare il messaggio MIDI corrispondente
+    switch (effect) {
+      case 'isDoubleOn':
+        this.midiOutput?.sendControlChange(51, value, { channels: this.selectedChannel });
+        break;
+      case 'isMorphOn':
+        this.midiOutput?.sendControlChange(52, value, { channels: this.selectedChannel });
+        break;
+      case 'isHardTuneOn':
+        this.midiOutput?.sendControlChange(53, value, { channels: this.selectedChannel });
+        break;
+      case 'isXfxOn':
+        this.midiOutput?.sendControlChange(54, value, { channels: this.selectedChannel });
+        break;
+      case 'isEchoOn':
+        this.midiOutput?.sendControlChange(55, value, { channels: this.selectedChannel });
+        break;
+      case 'isFilterOn':
+        this.midiOutput?.sendControlChange(56, value, { channels: this.selectedChannel });
+        break;
+    }
+}
 
-  toggleHardTune() {
-    this.isHardTuneOn = toggleHardTune(this.midiOutput, this.isHardTuneOn, this.selectedChannel);
-  }
 
-  toggleXfx() {
-    this.isXfxOn = toggleXfx(this.midiOutput, this.isXfxOn, this.selectedChannel);
-  }
-
-  toggleEcho() {
-    this.isEchoOn = toggleEcho(this.midiOutput, this.isEchoOn, this.selectedChannel);
-  }
-
-  toggleFilter() {
-    this.isFilterOn = toggleFilter(this.midiOutput, this.isFilterOn, this.selectedChannel);
-  }
 
   onToneSelect(tone: Tone) {
     console.log(`Selected tone: ${tone.name}`);
@@ -176,9 +186,10 @@ export class AppComponent implements OnInit {
   sendProgramChange(program: number) {
     if (this.midiOutput) {
         this.midiOutput.sendProgramChange(program, { channels: this.selectedChannel });
+        this.activeProgram = program; // Aggiorna il programma attivo
         console.log(`Sent Program Change: ${program} on channel ${this.selectedChannel}`);
     } else {
         console.warn('No MIDI Output available to send Program Change');
     }
-}
+  }
 }

@@ -32,9 +32,31 @@ body{
     color: black; /* Text color when OFF */
 }
 
-.toggle-button:hover {
-    background-color: lightcoral; /* Light red color on hover */
-    color: white; /* Change text color to white on hover */
+.toggle-button:active {
+  background-color: #a04545; /* Colore scuro quando attivo */
+  color: white; /* Cambia il testo a bianco */
+}
+
+@media (max-width: 768px) { /* Adatta la larghezza in base ai tuoi requisiti */
+  .toggle-button:hover {
+      background-color: #fff; /* Rimuovi l'effetto hover */
+      color: black; /* Testo nero */
+  }
+
+  .tone-buttons button:hover {
+      background-color: transparent; /* Rimuovi l'effetto hover sui bottoni delle tonalità */
+  }
+}
+
+@media (hover: hover) {
+  .toggle-button:hover {
+      background-color: lightcoral; /* Colore di sfondo quando hover */
+      color: white; /* Colore del testo quando hover */
+  }
+
+  .tone-buttons button:hover {
+      background-color: lightgreen; /* Sfondo verde chiaro quando il cursore è sopra */
+  }
 }
 
 

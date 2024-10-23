@@ -1,9 +1,16 @@
+<!--
+ng build --configuration production --base-href /tc-helicon-perform-ve-editor/
+ng deploy
+git add .
+git commit -m "ottimizzazione"
+git push
+-->
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Il tuo titolo</title>
+    <title>TC Helicon Perform VE</title>
 
     <link rel="manifest" href="manifest.webmanifest">
 
@@ -18,59 +25,64 @@
         <h3 style="font-weight: bold; text-align: center;">TC Helicon Perform VE</h3>
         
         <div style="text-align:center">
-            <select (change)="onDeviceSelected($event)">
-                <option *ngFor="let output of midiOutputs" [value]="output.id" [selected]="output.name === 'Perform-VE MIDI Out'">
-                    {{ output.name }}
-                </option>
-            </select>
+            <div class="device-selection">
+                <label for="midiOutput">Dispositivo MIDI di uscita:</label>
+                <select id="midiOutput" (change)="onDeviceSelected($event)">
+                    <option *ngFor="let output of midiOutputs" [value]="output.id" [selected]="output.name === 'Perform-VE MIDI Out'">
+                        {{ output.name }}
+                    </option>
+                </select>
 
-            <select (change)="onInputDeviceSelected($event)">
-                <option *ngFor="let input of midiInputs" [value]="input.id" [selected]="input.name === 'Perform-VE MIDI In'">
-                    {{ input.name }}
-                </option>
-            </select>
+                <label for="midiInput">Dispositivo MIDI di ingresso:</label>
+                <select id="midiInput" (change)="onInputDeviceSelected($event)">
+                    <option *ngFor="let input of midiInputs" [value]="input.id" [selected]="input.name === 'Perform-VE MIDI In'">
+                        {{ input.name }}
+                    </option>
+                </select>
+            </div>
         </div>
 
-        <select [(ngModel)]="selectedChannel" style="margin: 16px auto; display: block; width: 200px;">
+        <select id="channelSelect" [(ngModel)]="selectedChannel" style="margin: 16px auto; display: block; width: 200px;">
             <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
                 Channel {{ i + 1 }}
             </option>
         </select>
 
-        <div style="width: 100%; display: flex; justify-content: space-between; margin: 0 auto; margin-bottom: 16px; gap: 16px;">
-            <button class="toggle-button" (click)="sendProgramChange(0)">1</button>
-            <button class="toggle-button" (click)="sendProgramChange(1)">2</button>
-            <button class="toggle-button" (click)="sendProgramChange(2)">3</button>
-        </div>
+        <div style="width: 100%; display: flex; justify-content: center; margin: 0 auto; margin-bottom: 16px; gap: 16px;">
+            <button class="toggle-button" [ngClass]="{'on': activeProgram === 0, 'off': activeProgram !== 0}" (click)="sendProgramChange(0)">1</button>
+            <button class="toggle-button" [ngClass]="{'on': activeProgram === 1, 'off': activeProgram !== 1}" (click)="sendProgramChange(1)">2</button>
+            <button class="toggle-button" [ngClass]="{'on': activeProgram === 2, 'off': activeProgram !== 2}" (click)="sendProgramChange(2)">3</button>
+        </div>      
         
-        <div style="width: 100%; display: flex; justify-content: space-between; margin: 0 auto;">
+        <div style="display: flex; flex:0 0 100%; justify-content: space-between; margin: 0 auto;">
             <div style="display: flex; flex-direction: column; gap: 16px;">
-                <button class="toggle-button" [ngClass]="{'on': isDoubleOn, 'off': !isDoubleOn}" (click)="toggleDouble()">
+                <button class="toggle-button" [ngClass]="{'on': EffectStates.isDoubleOn, 'off': !EffectStates.isDoubleOn}" (click)="toggleEffect('isDoubleOn')">
                     Double
                 </button>
                 
-                <button class="toggle-button" [ngClass]="{'on': isMorphOn, 'off': !isMorphOn}" (click)="toggleMorph()">
+                <button class="toggle-button" [ngClass]="{'on': EffectStates.isMorphOn, 'off': !EffectStates.isMorphOn}" (click)="toggleEffect('isMorphOn')">
                     Morph
                 </button>
                 
-                <button class="toggle-button" [ngClass]="{'on': isHardTuneOn, 'off': !isHardTuneOn}" (click)="toggleHardTune()">
+                <button class="toggle-button" [ngClass]="{'on': EffectStates.isHardTuneOn, 'off': !EffectStates.isHardTuneOn}" (click)="toggleEffect('isHardTuneOn')">
                     HardTune
                 </button>
             </div>
-
+            
             <div style="display: flex; flex-direction: column; gap: 16px;">
-                <button class="toggle-button" [ngClass]="{'on': isXfxOn, 'off': !isXfxOn}" (click)="toggleXfx()">
+                <button class="toggle-button" [ngClass]="{'on': EffectStates.isXfxOn, 'off': !EffectStates.isXfxOn}" (click)="toggleEffect('isXfxOn')">
                     XFX
                 </button>
                 
-                <button class="toggle-button" [ngClass]="{'on': isEchoOn, 'off': !isEchoOn}" (click)="toggleEcho()">
+                <button class="toggle-button" [ngClass]="{'on': EffectStates.isEchoOn, 'off': !EffectStates.isEchoOn}" (click)="toggleEffect('isEchoOn')">
                     Echo
                 </button>
                 
-                <button class="toggle-button" [ngClass]="{'on': isFilterOn, 'off': !isFilterOn}" (click)="toggleFilter()">
+                <button class="toggle-button" [ngClass]="{'on': EffectStates.isFilterOn, 'off': !EffectStates.isFilterOn}" (click)="toggleEffect('isFilterOn')">
                     Filter
                 </button>
             </div>
+            
         </div>
 
         <div>
@@ -85,8 +97,8 @@
             <p>Tonalità selezionata: {{ selectedTone?.name || 'Nessuna selezione' }}</p>
         </div>
     </div>
-    <div style="text-align:center">
-        v 0.0.2
-    </div>
+    <footer style="text-align:center">
+        v 0.0.3
+    </footer>
 </body>
 </html>
