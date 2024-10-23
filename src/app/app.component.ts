@@ -71,24 +71,33 @@ export class AppComponent implements OnInit {
     this.midiOutputs = WebMidi.outputs;
     this.midiInputs = WebMidi.inputs;
 
-    const performVEOutput = this.midiOutputs.find(output => output.name === 'Perform-VE MIDI Out');
-    if (performVEOutput) {
-      this.midiOutput = performVEOutput;
-      console.log(`Selected MIDI Output: ${this.midiOutput.name}`);
+    // Seleziona l'output appropriato
+    this.midiOutput = this.midiOutputs.find(output =>
+        output.name.includes('Perform-VE') || output.name === 'Perform-VE MIDI Out'
+    );
+    if (this.midiOutput) {
+        console.log(`Selected MIDI Output: ${this.midiOutput.name}`);
+    } else {
+        console.warn('No MIDI Output found for "Perform-VE" or "Perform-VE MIDI Out"');
     }
 
-    const performVEInput = this.midiInputs.find(input => input.name === 'Perform-VE MIDI In');
-    if (performVEInput) {
-      this.midiInput = performVEInput;
-      console.log(`Selected MIDI Input: ${this.midiInput.name}`);
+    // Seleziona l'input appropriato
+    this.midiInput = this.midiInputs.find(input =>
+        input.name.includes('Perform-VE') || input.name === 'Perform-VE MIDI In'
+    );
+    if (this.midiInput) {
+        console.log(`Selected MIDI Input: ${this.midiInput.name}`);
 
-      this.midiInput.addListener('controlchange', (event: any) => {
-        console.log('Control Change Event:', event);
-        this.updateControlStates(event.controller.number, event.rawValue ?? 0);
-        this.cdr.detectChanges();
-      });
+        this.midiInput.addListener('controlchange', (event: any) => {
+            console.log('Control Change Event:', event);
+            this.updateControlStates(event.controller.number, event.rawValue ?? 0);
+            this.cdr.detectChanges();
+        });
+    } else {
+        console.warn('No MIDI Input found for "Perform-VE" or "Perform-VE MIDI In"');
     }
-  }
+}
+
 
   updateControlStates(controllerNumber: number, value: number) {
     switch (controllerNumber) {
