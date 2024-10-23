@@ -25,22 +25,27 @@
         <h3 style="font-weight: bold; text-align: center;">TC Helicon Perform VE</h3>
         
         <div style="text-align:center">
-            <div class="device-selection">
-                <label for="midiOutput">Dispositivo MIDI di uscita:</label>
-                <select id="midiOutput" (change)="onDeviceSelected($event)">
-                    <option *ngFor="let output of midiOutputs" [value]="output.id" [selected]="output.name === 'Perform-VE MIDI Out'">
-                        {{ output.name }}
-                    </option>
-                </select>
-
-                <label for="midiInput">Dispositivo MIDI di ingresso:</label>
-                <select id="midiInput" (change)="onInputDeviceSelected($event)">
-                    <option *ngFor="let input of midiInputs" [value]="input.id" [selected]="input.name === 'Perform-VE MIDI In'">
-                        {{ input.name }}
-                    </option>
-                </select>
+            <div class="device-selection" style="display:flex; justify-content:space-between;">
+                <div>
+                    <label for="midiOutput">Dispositivo MIDI di uscita:</label>
+                    <select id="midiOutput" (change)="onDeviceSelected($event)" class="styled-select">
+                        <option *ngFor="let output of midiOutputs" [value]="output.id">
+                            {{ output.name }}
+                        </option>
+                    </select>
+                </div>
+        
+                <div>
+                    <label for="midiInput">Dispositivo MIDI di ingresso:</label>
+                    <select id="midiInput" (change)="onInputDeviceSelected($event)" class="styled-select">
+                        <option *ngFor="let input of midiInputs" [value]="input.id">
+                            {{ input.name }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
+        
 
         <select id="channelSelect" [(ngModel)]="selectedChannel" style="margin: 16px auto; display: block; width: 200px;">
             <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
@@ -98,7 +103,7 @@
         </div>
     </div>
     <footer style="text-align:center">
-        v 0.0.4
+        v 0.0.5
     </footer>
 </body>
 </html>

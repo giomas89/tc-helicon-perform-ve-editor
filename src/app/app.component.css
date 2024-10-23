@@ -59,7 +59,6 @@ body{
   }
 }
 
-
   .tone-buttons {
     display: flex; /* Usa flexbox per allineare i bottoni in fila */
   }
@@ -89,3 +88,34 @@ body{
     color: white; /* Testo bianco quando è attivo */
   }
   
+
+  
+.device-selection {
+  margin: 20px 0; /* Spazio sopra e sotto il contenitore */
+}
+
+label {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #333; /* Colore del testo */
+}
+
+.styled-select {
+  padding: 10px; /* Spazio interno */
+  border: 1px solid #ccc; /* Bordo grigio chiaro */
+  border-radius: 5px; /* Angoli arrotondati */
+  font-size: 16px; /* Dimensione del font */
+  background-color: #f9f9f9; /* Colore di sfondo */
+  transition: border-color 0.3s; /* Transizione morbida per il bordo */
+}
+
+.styled-select:focus {
+  border-color: #007BFF; /* Colore del bordo al focus */
+  outline: none; /* Rimuovi il contorno di default */
+  background-color: #fff; /* Cambia colore di sfondo al focus */
+}
+
+/* Aggiunta di un'ombra al focus per un effetto visivo migliore */
+.styled-select:focus {
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
