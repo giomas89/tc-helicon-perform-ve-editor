@@ -220,6 +220,28 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Funzione per resettare il volume e aggiornare lo slider
+  resetVolume(cc: number) {
+    if (cc === 41) {
+      this.volume1 = 0; // Resetta volume1
+      this.onVolumeChange(this.volume1, 41); // Invia il CC 41 con valore 0
+    } else if (cc === 42) {
+      this.volume2 = 0; // Resetta volume2
+      this.onVolumeChange(this.volume2, 42); // Invia il CC 42 con valore 0
+    }
+  }
+
+  setMaxVolume(cc: number) {
+    const maxVolume = 127;
+    if (cc === 41) {
+        this.volume1 = maxVolume;
+    } else if (cc === 42) {
+        this.volume2 = maxVolume;
+    }
+    this.onVolumeChange(maxVolume, cc);
+}
+
+
   onSelectMidiOutputChange(event: any) {
     const selectedId = event.target.value;
     const selectedOutput = this.midiOutputs.find(output => output.id === selectedId);
