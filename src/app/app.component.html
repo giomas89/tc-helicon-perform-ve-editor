@@ -24,7 +24,7 @@
 
 </head>
 <body>
-    <div style="background-color:#f5d26c; padding:16px; border-radius:10px; width:100%">
+    <div>
         <h3 style="font-weight: bold; text-align: center;">TC Helicon Perform VE</h3>
         
         <div style="text-align:center">
@@ -59,6 +59,28 @@
                     </option>
                 </select>
             </div>
+            <!-- <div style="text-align: center; margin-bottom: 16px; width: 100%;">
+                <h4 style="margin-bottom: 8px;">MIDI CHANNEL:</h4>
+                <div class="channels-button">
+                    <div style="display: flex; justify-content: center; margin-bottom: -2px;"> 
+                        <button *ngFor="let channel of [].constructor(8); let i = index" 
+                                [ngClass]="{'active': selectedChannel === (i + 1)}"
+                                (click)="selectedChannel = i + 1">
+                            {{ i + 1 }}
+                        </button>
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <button *ngFor="let channel of [].constructor(8); let i = index" 
+                                [ngClass]="{'active': selectedChannel === (i + 9)}"
+                                (click)="selectedChannel = i + 9">
+                            {{ i + 9 }}
+                        </button>
+                    </div>
+                </div>
+            </div> -->
+            
+            
+            
         </div>
 
         <div style="width: 100%; display: flex; justify-content: center; margin: 0 auto; margin-bottom: 16px; gap: 16px;">
@@ -98,7 +120,7 @@
             
         </div>
 
-        <div>
+        <!-- <div>
             <h2>Scegli la tonalità (CC 19):</h2>
             <div class="tone-buttons">
                 <button *ngFor="let tone of tones" 
@@ -107,8 +129,30 @@
                     {{ tone.name }}
                 </button>
             </div>
+        </div>  -->
+        <div>
+            <h2>Scegli la tonalità (CC 19):</h2>
+            <div class="tone-buttons">
+                <button (click)="onToneSelect({ value: 0, name: 'Natural' })" 
+                        [ngClass]="{'active': selectedTone?.value === 0}" class="tone-button-natural">
+                    Natural
+                </button>
+                <div style="display:flex">
+                    <!-- Utilizza slice per escludere il primo e l'ultimo elemento -->
+                    <button *ngFor="let tone of tones.slice(1, tones.length - 1)" 
+                            [ngClass]="{'active': selectedTone?.value === tone.value}"
+                            (click)="onToneSelect(tone)">
+                        {{ tone.name }}
+                    </button>
+                </div>
+                <button (click)="onToneSelect({ value: 13, name: 'Chromatic' })" 
+                        [ngClass]="{'active': selectedTone?.value === 13}" class="tone-button-chromatic">
+                    Chromatic
+                </button>
+            </div>
         </div>
         
+
         <div style="margin-top: 20px;">
             <label for="volume2">Volume HARMONIZER (CC 42): {{ volume2 }}</label>
             <div class="control-wrapper" style="display: flex; align-items:center; gap:8px;">

@@ -1,13 +1,19 @@
-body{
+/* ===========================
+   Stile Generale
+   =========================== */
+   body {
     font-family: "Poppins", sans-serif; /* Imposta il font per tutto il body */
     font-size: 16px; /* Imposta la dimensione del font */
     line-height: 1.5; /* Imposta l'altezza della linea */
     color: #333; /* Imposta il colore del testo */
-    background-color: #f8f8f8; /* Imposta il colore di sfondo */
     margin: 0; /* Rimuove il margine predefinito */
-    padding: 20px; /* Aggiunge padding */
+    background-color:#f5d26c;
+    padding:16px;
 }
 
+/* ===========================
+   Stile per i Toggle Button
+   =========================== */
 .toggle-button {
     height: 64px;
     width: 150px;
@@ -22,9 +28,9 @@ body{
 }
 
 .toggle-button.on {
-    background-color: #d15656!important; /* Color when ON */
-    border: 2px solid #993434!important; /* Remove outline when ON */
-    color: white!important; /* Text color when ON */
+    background-color: #d15656 !important; /* Color when ON */
+    border: 2px solid #993434 !important; /* Remove outline when ON */
+    color: white !important; /* Text color when ON */
 }
 
 .toggle-button.off {
@@ -33,178 +39,236 @@ body{
 }
 
 .toggle-button:active {
-  background-color: #a04545; /* Colore scuro quando attivo */
-  color: white; /* Cambia il testo a bianco */
+    background-color: #a04545; /* Colore scuro quando attivo */
+    color: white; /* Cambia il testo a bianco */
 }
+
 .toggle-pc-button.on {
-  background-color: green!important; /* Sfondo verde quando il bottone è attivo */
-  border: 2px solid rgb(5, 70, 5)!important; 
-  color: white!important; /* Text color when ON */
+    background-color: green !important; /* Sfondo verde quando il bottone è attivo */
+    border: 2px solid rgb(5, 70, 5) !important; 
+    color: white !important; /* Text color when ON */
 }
+
 .toggle-pc-button:active {
-  background-color: rgb(7, 65, 7); /* Colore scuro quando attivo */
-  color: white; /* Cambia il testo a bianco */
+    background-color: rgb(7, 65, 7); /* Colore scuro quando attivo */
+    color: white; /* Cambia il testo a bianco */
 }
 
-
+/* ===========================
+   Media Queries
+   =========================== */
 @media (max-width: 768px) { /* Adatta la larghezza in base ai tuoi requisiti */
-  .toggle-button:hover {
-      background-color: #fff; /* Rimuovi l'effetto hover */
-      color: black; /* Testo nero */
-  }
+    .toggle-button:hover {
+        background-color: #fff; /* Rimuovi l'effetto hover */
+        color: black; /* Testo nero */
+    }
 
-  .tone-buttons button:hover {
-      background-color: transparent; /* Rimuovi l'effetto hover sui bottoni delle tonalità */
-  }
+    .tone-buttons button:hover {
+        background-color: lightgreen; /* Rimuovi l'effetto hover sui bottoni delle tonalità */
+    }
 }
 
 @media (hover: hover) {
-  .toggle-button:hover {
-      background-color: lightcoral; /* Colore di sfondo quando hover */
-      color: white; /* Colore del testo quando hover */
-  }
+    .toggle-button:hover {
+        background-color: lightcoral; /* Colore di sfondo quando hover */
+        color: white; /* Colore del testo quando hover */
+    }
 
-  .tone-buttons button:hover {
-      background-color: lightgreen; /* Sfondo verde chiaro quando il cursore è sopra */
-  }
+    .tone-buttons button:hover {
+        background-color: lightgreen; /* Sfondo verde chiaro quando il cursore è sopra */
+    }
 }
 
-  .tone-buttons {
+/* ===========================
+   Stile per i Bottoni delle Tonalità
+   =========================== */
+.tone-buttons {
     display: flex; /* Usa flexbox per allineare i bottoni in fila */
-  }
-  
-  .tone-buttons button {
-    width: 100px; /* Larghezza dei bottoni */
+    flex-direction: column; /* Mantieni i bottoni in colonna */
+}
+
+.tone-buttons button {
+    flex: 1 0 calc(100% / 12 - 12px); /* Ogni bottone occupa 100% / 12 della larghezza */
     height: 50px; /* Altezza dei bottoni */
     border: 2px solid black; /* Outline nero quando non è attivo */
     background-color: #fff; /* Sfondo trasparente */
     color: black; /* Testo nero quando non è attivo */
     cursor: pointer; /* Cambia il cursore al passaggio del mouse */
     transition: background-color 0.3s, color 0.3s; /* Transizione per lo sfondo e il colore del testo */
-    margin-right: -2px; /* Rimuovi il margine destro per evitare la somma dei bordi */
-  }
-  
-  .tone-buttons button:last-child {
-    margin-right: 0; /* Non applicare il margine all'ultimo bottone */
-  }
-  
-  .tone-buttons button:hover {
-    background-color: lightgreen; /* Sfondo verde chiaro quando il cursore è sopra */
-  }
-  
-  .tone-buttons button.active {
-    background-color: green; /* Sfondo verde quando il bottone è attivo */
-    border: 2px solid rgb(5, 70, 5); 
-    color: white; /* Testo bianco quando è attivo */
-  }
-  
+    box-sizing: border-box; /* Include il bordo e il padding nella larghezza totale */
+    margin: 0; /* Rimuovi margini per evitare sovrapposizioni */
+}
 
-  
+/* Rimuovi il bordo sinistro per evitare sovrapposizioni */
+.tone-buttons button + button {
+    border-left: none; 
+}
+
+/* Margine verticale per separare i bottoni */
+.tone-buttons button {
+    margin-bottom: -2px; /* Piccolo margine negativo per sovrapporre i bordi */
+}
+
+.tone-buttons button:first-child {
+    margin-bottom: 0; /* Nessun margine sotto il primo bottone */
+}
+
+.tone-buttons button:last-child {
+    margin-top: 0; /* Nessun margine sopra l'ultimo bottone */
+    margin-right: 0; /* Non applicare il margine all'ultimo bottone */
+}
+
+.tone-button-natural {
+    border-bottom: none !important;
+    min-height: 50px !important;
+}
+
+.tone-button-chromatic {
+    border-top: none !important;
+    min-height: 50px !important;
+}
+
+.tone-buttons button.active {
+  background-color: #4caf50; /* Colore di sfondo verde per attivo */
+  color: white; /* Testo bianco per il bottone attivo */
+}
+
+.tone-buttons button.off {
+  background-color: #f44336; /* Colore di sfondo rosso per inattivo */
+  color: white; /* Testo bianco per il bottone inattivo */
+}
+
+/* ===========================
+   Stile per la Selezione del Dispositivo
+   =========================== */
 .device-selection {
-  margin: 20px 0; /* Spazio sopra e sotto il contenitore */
+    margin: 20px 0; /* Spazio sopra e sotto il contenitore */
 }
 
 label {
-  font-size: 16px;
-  margin-bottom: 5px;
-  color: #333; /* Colore del testo */
-  display:block;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #333; /* Colore del testo */
+    display: block;
 }
 
+/* ===========================
+   Stile per il Select Personalizzato
+   =========================== */
 .styled-select {
-  width:100%;
-  padding: 10px; /* Spazio interno */
-  border: 2px solid #000; /* Bordo grigio chiaro */
-  border-radius: 5px; /* Angoli arrotondati */
-  font-size: 16px; /* Dimensione del font */
-  background-color: #f9f9f9; /* Colore di sfondo */
-  transition: border-color 0.3s; /* Transizione morbida per il bordo */
+    width: 100%;
+    padding: 10px; /* Spazio interno */
+    border: 2px solid #000; /* Bordo grigio chiaro */
+    border-radius: 5px; /* Angoli arrotondati */
+    font-size: 16px; /* Dimensione del font */
+    background-color: #f9f9f9; /* Colore di sfondo */
+    transition: border-color 0.3s; /* Transizione morbida per il bordo */
 }
 
 .styled-select:focus {
-  border-color: #007BFF; /* Colore del bordo al focus */
-  outline: none; /* Rimuovi il contorno di default */
-  background-color: #fff; /* Cambia colore di sfondo al focus */
+    border-color: #007BFF; /* Colore del bordo al focus */
+    outline: none; /* Rimuovi il contorno di default */
+    background-color: #fff; /* Cambia colore di sfondo al focus */
 }
 
 /* Aggiunta di un'ombra al focus per un effetto visivo migliore */
 .styled-select:focus {
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-
-/* Stile per gli slider */
+/* ===========================
+   Stile per gli Slider
+   =========================== */
 .volume-slider {
-  -webkit-appearance: none; /* Per WebKit (Chrome, Safari) */
-  -moz-appearance: none;    /* Per Firefox */
-  appearance: none;         /* Proprietà standard */
-  width: 100%;              /* Imposta la larghezza al 100% */
-  height: 16px;             /* Aumenta l'altezza dello slider */
-  border-radius: 5px;       /* Aggiungi angoli arrotondati */
-  background: #fff;         /* Colore di sfondo */
-  outline: none;            /* Rimuove il contorno */
-  opacity: 0.7;             /* Opacità dello slider */
-  transition: opacity .2s;  /* Transizione per l'opacità */
+    -webkit-appearance: none; /* Per WebKit (Chrome, Safari) */
+    -moz-appearance: none;    /* Per Firefox */
+    appearance: none;         /* Proprietà standard */
+    width: 100%;              /* Imposta la larghezza al 100% */
+    height: 16px;             /* Aumenta l'altezza dello slider */
+    border-radius: 5px;       /* Aggiungi angoli arrotondati */
+    background: #fff;         /* Colore di sfondo */
+    outline: none;            /* Rimuove il contorno */
+    opacity: 0.7;             /* Opacità dello slider */
+    transition: opacity .2s;  /* Transizione per l'opacità */
 }
 
 .volume-slider:hover {
-  opacity: 1; /* Aumenta l'opacità al passaggio del mouse */
+    opacity: 1; /* Aumenta l'opacità al passaggio del mouse */
 }
 
 /* Pallino dello slider */
 .volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Per WebKit (Chrome, Safari) */
-  appearance: none;         /* Proprietà standard */
-  width: 24px;             /* Aumenta la larghezza del pallino */
-  height: 24px;            /* Aumenta l'altezza del pallino */
-  border-radius: 50%;      /* Rende il pallino rotondo */
-  background: #d15656;     /* Colore del pallino */
-  cursor: pointer;         /* Cambia il cursore al passaggio del mouse */
+    -webkit-appearance: none; /* Per WebKit (Chrome, Safari) */
+    appearance: none;         /* Proprietà standard */
+    width: 24px;             /* Aumenta la larghezza del pallino */
+    height: 24px;            /* Aumenta l'altezza del pallino */
+    border-radius: 50%;      /* Rende il pallino rotondo */
+    background: #d15656;     /* Colore del pallino */
+    cursor: pointer;         /* Cambia il cursore al passaggio del mouse */
 }
 
 .volume-slider::-moz-range-thumb {
-  width: 24px;             /* Aumenta la larghezza del pallino per Firefox */
-  height: 24px;            /* Aumenta l'altezza del pallino per Firefox */
-  border-radius: 50%;      /* Rende il pallino rotondo per Firefox */
-  background: #d15656;     /* Colore del pallino per Firefox */
-  cursor: pointer;         /* Cambia il cursore al passaggio del mouse per Firefox */
+    width: 24px;             /* Aumenta la larghezza del pallino per Firefox */
+    height: 24px;            /* Aumenta l'altezza del pallino per Firefox */
+    border-radius: 50%;      /* Rende il pallino rotondo per Firefox */
+    background: #d15656;     /* Colore del pallino per Firefox */
+    cursor: pointer;         /* Cambia il cursore al passaggio del mouse per Firefox */
 }
 
-
+/* ===========================
+   Stile per il Bottone di Reset
+   =========================== */
 .reset-button {
-  background: none; /* Rimuove lo sfondo */
-  border: none; /* Rimuove il bordo */
-  padding: 0; /* Rimuove l'imbottitura */
-  margin: 0; /* Rimuove il margine */
-  cursor: pointer; /* Cambia il cursore quando si passa sopra */
+    background: none; /* Rimuove lo sfondo */
+    border: none; /* Rimuove il bordo */
+    padding: 0; /* Rimuove l'imbottitura */
+    margin: 0; /* Rimuove il margine */
+    cursor: pointer; /* Cambia il cursore quando si passa sopra */
 }
 
 .reset-button i {
-  font-size: 1.5em; /* Dimensione dell'icona */
-  color: #333; /* Colore dell'icona, puoi personalizzarlo */
+    font-size: 1.5em; /* Dimensione dell'icona */
+    color: #333; /* Colore dell'icona, puoi personalizzarlo */
 }
 
 .reset-button:focus {
-  outline: none; /* Rimuove il contorno di messa a fuoco */
+    outline: none; /* Rimuove il contorno al focus */
 }
 
-.reset-button:hover i {
-  color: #ff0000; /* Cambia il colore dell'icona al passaggio del mouse (opzionale) */
+
+/* ===========================
+   Stile per il Bottone di MIDI CHANNELS
+   =========================== */
+.channels-button {
+  display: flex; /* Usa flexbox per allineare i bottoni in colonna */
+  flex-direction: column; /* Mantiene i bottoni in due file */
 }
 
-.max-volume-button {
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
+.channels-button div {
+  display: flex; /* Usa flexbox per allineare i bottoni in fila */
 }
 
-.max-volume-button i {
-  font-size: 1.5em;
-  color: #333;
+.channels-button button {
+  width: calc(100% / 8); /* Larghezza dei bottoni */
+  height: 50px; /* Altezza dei bottoni */
+  border: 2px solid black; /* Outline nero quando non è attivo */
+  background-color: #fff; /* Sfondo trasparente */
+  color: black; /* Testo nero quando non è attivo */
+  cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+  transition: background-color 0.3s, color 0.3s; /* Transizione per lo sfondo e il colore del testo */
+  margin-right: -2px; /* Rimuovi il margine destro per evitare la somma dei bordi */
 }
 
-.max-volume-button:hover i {
-  color: #007bff; /* Cambia colore al passaggio del mouse */
+.channels-button button:last-child {
+  margin-right: 0; /* Non applicare il margine all'ultimo bottone */
+}
+
+.channels-button button:hover {
+  background-color: lightgreen; /* Sfondo verde chiaro quando il cursore è sopra */
+}
+
+.channels-button button.active {
+  background-color: green; /* Sfondo verde quando il bottone è attivo */
+  border: 2px solid rgb(5, 70, 5); 
+  color: white; /* Testo bianco quando è attivo */
 }

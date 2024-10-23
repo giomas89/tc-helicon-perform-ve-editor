@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 
+
 // Risorse CC
 import { ccList, Tone } from './cc-list';
 import { toggleDouble } from './CC/double';
@@ -28,10 +29,11 @@ export class AppComponent implements OnInit {
   midiOutput: Output | undefined;
   midiInput: Input | undefined;
   tones: Tone[] = []; 
-  selectedChannel: number;
   selectedTone: Tone | null = null; 
   selectedMidiOutput: string | null = null;
   selectedMidiInput: string | null = null;
+  // selectedChannel: number;
+  selectedChannel: number = 1; 
 
   // Stato degli effetti
   EffectStates = {
@@ -120,12 +122,14 @@ export class AppComponent implements OnInit {
   }
 
   updateControlStates(controllerNumber: number, value: number) {
+    console.log('upd:',controllerNumber,value);
     switch (controllerNumber) {
       case 19:
         const selectedTone = this.tones.find(tone => tone.value === value);
         if (selectedTone) {
           this.selectedTone = selectedTone; 
         }
+        console.log(this.selectedTone?.value);
         break;
       case 41:
         this.volume1 = value; // Aggiorna il volume 1
@@ -154,6 +158,8 @@ export class AppComponent implements OnInit {
       default:
         console.warn("Unrecognized controller number: ${controllerNumber}");
     }
+
+    this.cdr.detectChanges(); // Forza il rilevamento dei cambiamenti
   }
 
   handleMidiMessage(message: any) {
