@@ -75,8 +75,9 @@ export class AppComponent implements OnInit {
     this.midiOutputs = WebMidi.outputs;
     this.midiInputs = WebMidi.inputs;
 
+    // Selezione automatica dell'output MIDI "Perform-VE"
     this.midiOutput = this.midiOutputs.find(output =>
-        output.name.includes('Perform-VE') || output.name === 'Perform-VE MIDI Out'
+        output.name.includes('Perform-VE') || output.name === 'Perform-VE MIDI Out'|| output.name === 'Perform-VE'
     );
     if (this.midiOutput) {
         console.log(`Selected MIDI Output: ${this.midiOutput.name}`);
@@ -84,8 +85,9 @@ export class AppComponent implements OnInit {
         console.warn('No MIDI Output found for "Perform-VE" or "Perform-VE MIDI Out"');
     }
 
+    // Selezione automatica dell'input MIDI "Perform-VE"
     this.midiInput = this.midiInputs.find(input =>
-        input.name.includes('Perform-VE') || input.name === 'Perform-VE MIDI In'
+        input.name.includes('Perform-VE') || input.name === 'Perform-VE MIDI In' || input.name === 'Perform-VE'
     );
     if (this.midiInput) {
         console.log(`Selected MIDI Input: ${this.midiInput.name}`);
@@ -98,7 +100,11 @@ export class AppComponent implements OnInit {
     } else {
         console.warn('No MIDI Input found for "Perform-VE" or "Perform-VE MIDI In"');
     }
-  }
+    
+    // Imposta il canale selezionato
+    this.selectedChannel = 1; // Puoi cambiare il canale se necessario
+}
+
 
   updateControlStates(controllerNumber: number, value: number) {
     switch (controllerNumber) {
