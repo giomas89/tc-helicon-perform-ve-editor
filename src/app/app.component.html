@@ -22,14 +22,14 @@
     <link rel="stylesheet" href="google-font.css">
 </head>
 <body>
-    <div style="background-color:#f5d26c; padding:16px; border-radius:10px">
+    <div style="background-color:#f5d26c; padding:16px; border-radius:10px; width:100%">
         <h3 style="font-weight: bold; text-align: center;">TC Helicon Perform VE</h3>
         
         <div style="text-align:center">
             <div class="device-selection" style="display:flex; justify-content:space-between;">
                 <div>
                     <label for="midiOutput">MIDI-OUT</label>
-                    <select id="midiOutput" [(ngModel)]="selectedMidiOutput" (change)="onDeviceSelected($event)" class="styled-select">
+                    <select id="midiOutput" [(ngModel)]="selectedMidiOutput" (change)="onSelectMidiOutputChange($event)" class="styled-select">
                         <option *ngFor="let output of midiOutputs" [value]="output.id">
                             {{ output.name }}
                         </option>
@@ -38,15 +38,15 @@
                 
                 <div>
                     <label for="midiInput">MIDI-IN</label>
-                    <select id="midiInput" [(ngModel)]="selectedMidiInput" (change)="onInputDeviceSelected($event)" class="styled-select">
+                    <select id="midiInput" [(ngModel)]="selectedMidiInput" (change)="onSelectMidiInputChange($event)" class="styled-select">
                         <option *ngFor="let input of midiInputs" [value]="input.id">
                             {{ input.name }}
                         </option>
                     </select>
                 </div>
-                
             </div>
         </div>
+        
         
         <div class="device-selection" style="display:flex; justify-content:center;">
             <div>
@@ -60,9 +60,9 @@
         </div>
 
         <div style="width: 100%; display: flex; justify-content: center; margin: 0 auto; margin-bottom: 16px; gap: 16px;">
-            <button class="toggle-button" [ngClass]="{'on': activeProgram === 0, 'off': activeProgram !== 0}" (click)="sendProgramChange(0)">1</button>
-            <button class="toggle-button" [ngClass]="{'on': activeProgram === 1, 'off': activeProgram !== 1}" (click)="sendProgramChange(1)">2</button>
-            <button class="toggle-button" [ngClass]="{'on': activeProgram === 2, 'off': activeProgram !== 2}" (click)="sendProgramChange(2)">3</button>
+            <button class="toggle-button toggle-pc-button" [ngClass]="{'on': activeProgram === 0, 'off': activeProgram !== 0}" (click)="sendProgramChange(0)">1</button>
+            <button class="toggle-button toggle-pc-button" [ngClass]="{'on': activeProgram === 1, 'off': activeProgram !== 1}" (click)="sendProgramChange(1)">2</button>
+            <button class="toggle-button toggle-pc-button" [ngClass]="{'on': activeProgram === 2, 'off': activeProgram !== 2}" (click)="sendProgramChange(2)">3</button>
         </div>      
         
         <div style="display: flex; flex:0 0 100%; justify-content: space-between; margin: 0 auto;">
@@ -105,22 +105,21 @@
                     {{ tone.name }}
                 </button>
             </div>
-            <p>Tonalità selezionata: {{ selectedTone?.name || 'Nessuna selezione' }}</p>
         </div>
         
         <div style="margin-top: 20px;">
-            <label for="volume1">Volume VOICE+FX (CC 41): {{ volume1 }}</label>
-            <input class="volume-slider" type="range" id="volume1" min="0" max="127" [(ngModel)]="volume1" (input)="onVolumeChange(volume1, 41)" />
-        
             <label for="volume2">Volume HARMONIZER (CC 42): {{ volume2 }}</label>
             <input class="volume-slider" type="range" id="volume2" min="0" max="127" [(ngModel)]="volume2" (input)="onVolumeChange(volume2, 42)" />
+             
+            <label for="volume1">Volume VOICE+FX (CC 41): {{ volume1 }}</label>
+            <input class="volume-slider" type="range" id="volume1" min="0" max="127" [(ngModel)]="volume1" (input)="onVolumeChange(volume1, 41)" />
         </div>
     </div>
     
     
     
     <footer style="text-align:center">
-        v 0.0.9
+        v 0.0.10
     </footer>
 </body>
 </html>

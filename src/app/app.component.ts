@@ -78,24 +78,46 @@ export class AppComponent implements OnInit {
 
   onMidiEnabled() {
     console.log('WebMIDI enabled!');
+
     this.midiOutputs = WebMidi.outputs;
     this.midiInputs = WebMidi.inputs;
 
-    // Imposta il dispositivo MIDI OUT selezionato se disponibile
-    this.selectedMidiOutput = this.midiOutputs.find(output =>
-        output.name.toLowerCase().startsWith('perform-ve')
-    )?.id || null;
-
-    // Imposta il dispositivo MIDI IN selezionato se disponibile
-    this.selectedMidiInput = this.midiInputs.find(input =>
-        input.name.toLowerCase().startsWith('perform-ve')
-    )?.id || null;
-
-    // Log degli output e input MIDI
     console.log('Available MIDI Outputs:', this.midiOutputs);
     console.log('Available MIDI Inputs:', this.midiInputs);
-}
 
+    // Selezione del dispositivo MIDI OUT
+    const selectedOutput = this.midiOutputs.find(output =>
+        output.name.toLowerCase().startsWith('perform-ve')
+    );
+
+    if (selectedOutput) {
+        this.selectedMidiOutput = selectedOutput.id;
+        this.midiOutput = selectedOutput;
+        console.log("Automatically selected output device: ID: ${this.selectedMidiOutput}, Name: ${this.midiOutput.name}");
+        
+        // Invio messaggio di controllo per conferma
+        this.midiOutput.sendControlChange(19, 0, { channels: this.selectedChannel });
+    } else {
+        console.warn('No suitable MIDI output found.');
+    }
+
+    // Selezione del dispositivo MIDI IN
+    const selectedInput = this.midiInputs.find(input =>
+        input.name.toLowerCase().startsWith('perform-ve')
+    );
+
+    if (selectedInput) {
+        this.selectedMidiInput = selectedInput.id;
+        this.midiInput = selectedInput;
+        console.log("Automatically selected input device: ID: ${this.selectedMidiInput}, Name: ${this.midiInput.name}");
+
+        // Aggiungi listener per messaggi MIDI
+        this.midiInput.addListener('midimessage', this.handleMidiMessage.bind(this));
+        console.log("Listening for MIDI messages on input device: ${this.midiInput.name}");
+    } else {
+        console.warn('No suitable MIDI input found.');
+    }
+  }
 
   updateControlStates(controllerNumber: number, value: number) {
     switch (controllerNumber) {
@@ -103,7 +125,6 @@ export class AppComponent implements OnInit {
         const selectedTone = this.tones.find(tone => tone.value === value);
         if (selectedTone) {
           this.selectedTone = selectedTone; 
-          console.log(`Updated selected tone to: ${selectedTone.name}`);
         }
         break;
       case 41:
@@ -130,19 +151,15 @@ export class AppComponent implements OnInit {
       case 56:
         this.EffectStates.isFilterOn = value === 64;
         break;
+      default:
+        console.warn("Unrecognized controller number: ${controllerNumber}");
     }
   }
 
-  onDeviceSelected(event: any) {
-    const selectedId = event.target.value;
-    this.midiOutput = WebMidi.getOutputById(selectedId);
-    console.log(`Selected device ID: ${selectedId}`);
-  }
-
-  onInputDeviceSelected(event: any) {
-    const selectedId = event.target.value;
-    this.midiInput = WebMidi.getInputById(selectedId);
-    console.log(`Selected input device ID: ${selectedId}`);
+  handleMidiMessage(message: any) {
+    const [status, controllerNumber, value] = message.data;
+    console.log("RECEIVED MIDI message:", message.data); // Log dei messaggi MIDI ricevuti
+    this.updateControlStates(controllerNumber, value);
   }
 
   toggleEffect(effect: keyof typeof this.EffectStates) {
@@ -172,25 +189,25 @@ export class AppComponent implements OnInit {
       case 'isFilterOn':
         this.midiOutput?.sendControlChange(56, value, { channels: this.selectedChannel });
         break;
+      default:
+        console.warn("Unrecognized effect: ${effect}");
     }
   }
 
   onToneSelect(tone: Tone) {
-    console.log(`Selected tone: ${tone.name}`);
     this.selectedTone = tone;
 
     if (this.midiOutput) {
-        this.midiOutput.sendControlChange(19, tone.value, { channels: this.selectedChannel });
+      this.midiOutput.sendControlChange(19, tone.value, { channels: this.selectedChannel });
     }
   }
 
   sendProgramChange(program: number) {
     if (this.midiOutput) {
-        this.midiOutput.sendProgramChange(program, { channels: this.selectedChannel });
-        this.activeProgram = program; // Aggiorna il programma attivo
-        console.log(`Sent Program Change: ${program} on channel ${this.selectedChannel}`);
+      this.midiOutput.sendProgramChange(program, { channels: this.selectedChannel });
+      this.activeProgram = program; // Aggiorna il programma attivo
     } else {
-        console.warn('No MIDI Output available to send Program Change');
+      console.warn('No MIDI Output available to send Program Change');
     }
   }
 
@@ -198,7 +215,32 @@ export class AppComponent implements OnInit {
   onVolumeChange(volume: number, cc: number) {
     if (this.midiOutput) {
       this.midiOutput.sendControlChange(cc, volume, { channels: this.selectedChannel });
-      console.log(`Sent volume change: ${volume} on CC ${cc}`);
+    } else {
+      console.warn('No MIDI Output available to send volume change');
     }
   }
+
+  onSelectMidiOutputChange(event: any) {
+    const selectedId = event.target.value;
+    const selectedOutput = this.midiOutputs.find(output => output.id === selectedId);
+    
+    if (selectedOutput) {
+      this.midiOutput = selectedOutput;
+      this.selectedMidiOutput = selectedOutput.id;
+      console.log("Selected MIDI Output: ${selectedOutput.name}");
+    }
+  }
+  
+  onSelectMidiInputChange(event: any) {
+    const selectedId = event.target.value;
+    const selectedInput = this.midiInputs.find(input => input.id === selectedId);
+    
+    if (selectedInput) {
+      this.midiInput = selectedInput;
+      this.selectedMidiInput = selectedInput.id;
+      this.midiInput.addListener('midimessage', this.handleMidiMessage.bind(this));
+      console.log("Selected MIDI Input: ${selectedInput.name}");
+    }
+  }
+  
 }

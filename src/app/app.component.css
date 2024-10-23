@@ -22,9 +22,9 @@ body{
 }
 
 .toggle-button.on {
-    background-color: #d15656; /* Color when ON */
-    border: 2px solid #993434; /* Remove outline when ON */
-    color: white; /* Text color when ON */
+    background-color: #d15656!important; /* Color when ON */
+    border: 2px solid #993434!important; /* Remove outline when ON */
+    color: white!important; /* Text color when ON */
 }
 
 .toggle-button.off {
@@ -36,6 +36,16 @@ body{
   background-color: #a04545; /* Colore scuro quando attivo */
   color: white; /* Cambia il testo a bianco */
 }
+.toggle-pc-button.on {
+  background-color: green!important; /* Sfondo verde quando il bottone è attivo */
+  border: 2px solid rgb(5, 70, 5)!important; 
+  color: white!important; /* Text color when ON */
+}
+.toggle-pc-button:active {
+  background-color: rgb(7, 65, 7); /* Colore scuro quando attivo */
+  color: white; /* Cambia il testo a bianco */
+}
+
 
 @media (max-width: 768px) { /* Adatta la larghezza in base ai tuoi requisiti */
   .toggle-button:hover {
@@ -131,7 +141,7 @@ label {
   width: 100%;              /* Imposta la larghezza al 100% */
   height: 16px;             /* Aumenta l'altezza dello slider */
   border-radius: 5px;       /* Aggiungi angoli arrotondati */
-  background: #ddd;         /* Colore di sfondo */
+  background: #fff;         /* Colore di sfondo */
   outline: none;            /* Rimuove il contorno */
   opacity: 0.7;             /* Opacità dello slider */
   transition: opacity .2s;  /* Transizione per l'opacità */
