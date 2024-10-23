@@ -27,7 +27,7 @@
         <div style="text-align:center">
             <div class="device-selection" style="display:flex; justify-content:space-between;">
                 <div>
-                    <label for="midiOutput">Dispositivo MIDI di uscita</label>
+                    <label for="midiOutput">MIDI-OUT</label>
                     <select id="midiOutput" (change)="onDeviceSelected($event)" class="styled-select">
                         <option *ngFor="let output of midiOutputs" [value]="output.id">
                             {{ output.name }}
@@ -36,7 +36,7 @@
                 </div>
         
                 <div>
-                    <label for="midiInput">Dispositivo MIDI di ingresso</label>
+                    <label for="midiInput">MIDI-IN</label>
                     <select id="midiInput" (change)="onInputDeviceSelected($event)" class="styled-select">
                         <option *ngFor="let input of midiInputs" [value]="input.id">
                             {{ input.name }}
@@ -48,7 +48,7 @@
         
         <div class="device-selection" style="display:flex; justify-content:center;">
             <div>
-                <label for="midiInput">Dispositivo MIDI di ingresso</label>
+                <label for="midiInput">MIDI CHANNEL</label>
                 <select id="channelSelect" [(ngModel)]="selectedChannel"  class="styled-select">
                     <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
                         Channel {{ i + 1 }}
@@ -107,7 +107,7 @@
         </div>
     </div>
     <footer style="text-align:center">
-        v 0.0.6
+        v 0.0.7
     </footer>
 </body>
 </html>
