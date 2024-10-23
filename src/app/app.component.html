@@ -27,7 +27,7 @@
         <div style="text-align:center">
             <div class="device-selection" style="display:flex; justify-content:space-between;">
                 <div>
-                    <label for="midiOutput">Dispositivo MIDI di uscita:</label>
+                    <label for="midiOutput">Dispositivo MIDI di uscita</label>
                     <select id="midiOutput" (change)="onDeviceSelected($event)" class="styled-select">
                         <option *ngFor="let output of midiOutputs" [value]="output.id">
                             {{ output.name }}
@@ -36,7 +36,7 @@
                 </div>
         
                 <div>
-                    <label for="midiInput">Dispositivo MIDI di ingresso:</label>
+                    <label for="midiInput">Dispositivo MIDI di ingresso</label>
                     <select id="midiInput" (change)="onInputDeviceSelected($event)" class="styled-select">
                         <option *ngFor="let input of midiInputs" [value]="input.id">
                             {{ input.name }}
@@ -46,12 +46,16 @@
             </div>
         </div>
         
-
-        <select id="channelSelect" [(ngModel)]="selectedChannel" style="margin: 16px auto; display: block; width: 200px;">
-            <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
-                Channel {{ i + 1 }}
-            </option>
-        </select>
+        <div class="device-selection" style="display:flex; justify-content:center;">
+            <div>
+                <label for="midiInput">Dispositivo MIDI di ingresso</label>
+                <select id="channelSelect" [(ngModel)]="selectedChannel"  class="styled-select">
+                    <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
+                        Channel {{ i + 1 }}
+                    </option>
+                </select>
+            </div>
+        </div>
 
         <div style="width: 100%; display: flex; justify-content: center; margin: 0 auto; margin-bottom: 16px; gap: 16px;">
             <button class="toggle-button" [ngClass]="{'on': activeProgram === 0, 'off': activeProgram !== 0}" (click)="sendProgramChange(0)">1</button>
@@ -103,7 +107,7 @@
         </div>
     </div>
     <footer style="text-align:center">
-        v 0.0.5
+        v 0.0.6
     </footer>
 </body>
 </html>

@@ -98,11 +98,13 @@ label {
   font-size: 16px;
   margin-bottom: 5px;
   color: #333; /* Colore del testo */
+  display:block;
 }
 
 .styled-select {
+  width:100%;
   padding: 10px; /* Spazio interno */
-  border: 1px solid #ccc; /* Bordo grigio chiaro */
+  border: 2px solid #000; /* Bordo grigio chiaro */
   border-radius: 5px; /* Angoli arrotondati */
   font-size: 16px; /* Dimensione del font */
   background-color: #f9f9f9; /* Colore di sfondo */
