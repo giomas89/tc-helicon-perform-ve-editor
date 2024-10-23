@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { WebMidi, Output, Input } from 'webmidi'; 
-//npm install webmidi
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
 import { ChangeDetectorRef } from '@angular/core';
@@ -30,7 +29,7 @@ export class AppComponent implements OnInit {
   midiInput: Input | undefined;
   tones: Tone[] = []; 
   selectedChannel: number;
-  selectedTone: Tone | null = null; // Inizializza come null
+  selectedTone: Tone | null = null; 
   isHardTuneOn: boolean = false;
   isMorphOn: boolean = false;
   isDoubleOn: boolean = false;
@@ -46,13 +45,13 @@ export class AppComponent implements OnInit {
   
   ngOnInit(): void {
     this.enableWebMidi();
-    this.initializeTones(); // Assicurati che venga chiamato
+    this.initializeTones(); 
   }
 
   initializeTones() {
     const toneCC = ccList.find(entry => entry.CC === 19);
     if (toneCC) {
-      this.tones = toneCC.values as Tone[]; // Assicurati che 'values' contenga un array di Tone
+      this.tones = toneCC.values as Tone[];
     }
   }
 
@@ -71,7 +70,6 @@ export class AppComponent implements OnInit {
     this.midiOutputs = WebMidi.outputs;
     this.midiInputs = WebMidi.inputs;
 
-    // Seleziona l'output appropriato
     this.midiOutput = this.midiOutputs.find(output =>
         output.name.includes('Perform-VE') || output.name === 'Perform-VE MIDI Out'
     );
@@ -81,7 +79,6 @@ export class AppComponent implements OnInit {
         console.warn('No MIDI Output found for "Perform-VE" or "Perform-VE MIDI Out"');
     }
 
-    // Seleziona l'input appropriato
     this.midiInput = this.midiInputs.find(input =>
         input.name.includes('Perform-VE') || input.name === 'Perform-VE MIDI In'
     );
@@ -98,14 +95,12 @@ export class AppComponent implements OnInit {
     }
 }
 
-
   updateControlStates(controllerNumber: number, value: number) {
     switch (controllerNumber) {
       case 19:
-        // Aggiorna selectedTone in base al valore ricevuto
         const selectedTone = this.tones.find(tone => tone.value === value);
         if (selectedTone) {
-          this.selectedTone = selectedTone; // Aggiorna selectedTone
+          this.selectedTone = selectedTone; 
           console.log(`Updated selected tone to: ${selectedTone.name}`);
         }
         break;
@@ -127,6 +122,9 @@ export class AppComponent implements OnInit {
       case 56:
         this.isFilterOn = value === 64;
         break;
+      // default:
+      //   console.warn(`Unhandled Controller Number: ${controllerNumber} with value: ${value}`);
+      //   break;
     }
   }
 
@@ -167,11 +165,20 @@ export class AppComponent implements OnInit {
   }
 
   onToneSelect(tone: Tone) {
-    console.log(`Selected tone: ${tone.name}`); // Aggiungi questo log per il debug
+    console.log(`Selected tone: ${tone.name}`);
     this.selectedTone = tone;
 
     if (this.midiOutput) {
         this.midiOutput.sendControlChange(19, tone.value, { channels: this.selectedChannel });
     }
   }
+
+  sendProgramChange(program: number) {
+    if (this.midiOutput) {
+        this.midiOutput.sendProgramChange(program, { channels: this.selectedChannel });
+        console.log(`Sent Program Change: ${program} on channel ${this.selectedChannel}`);
+    } else {
+        console.warn('No MIDI Output available to send Program Change');
+    }
+}
 }
