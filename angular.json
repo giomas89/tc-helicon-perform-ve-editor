@@ -41,11 +41,12 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "6kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "baseHref": "/tc-helicon-perform-ve-editor/"  // Spostato qui
             },
             "development": {
               "optimization": false,
@@ -89,8 +90,14 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "a794ed3e-7cc6-4496-b320-cc27945afe4e"
   }
 }
