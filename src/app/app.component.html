@@ -29,21 +29,22 @@
             <div class="device-selection" style="display:flex; justify-content:space-between;">
                 <div>
                     <label for="midiOutput">MIDI-OUT</label>
-                    <select id="midiOutput" (change)="onDeviceSelected($event)" class="styled-select">
+                    <select id="midiOutput" [(ngModel)]="selectedMidiOutput" (change)="onDeviceSelected($event)" class="styled-select">
                         <option *ngFor="let output of midiOutputs" [value]="output.id">
                             {{ output.name }}
                         </option>
                     </select>
                 </div>
-        
+                
                 <div>
                     <label for="midiInput">MIDI-IN</label>
-                    <select id="midiInput" (change)="onInputDeviceSelected($event)" class="styled-select">
+                    <select id="midiInput" [(ngModel)]="selectedMidiInput" (change)="onInputDeviceSelected($event)" class="styled-select">
                         <option *ngFor="let input of midiInputs" [value]="input.id">
                             {{ input.name }}
                         </option>
                     </select>
                 </div>
+                
             </div>
         </div>
         
@@ -106,9 +107,20 @@
             </div>
             <p>Tonalità selezionata: {{ selectedTone?.name || 'Nessuna selezione' }}</p>
         </div>
+        
+        <div style="margin-top: 20px;">
+            <label for="volume1">Volume VOICE+FX (CC 41): {{ volume1 }}</label>
+            <input class="volume-slider" type="range" id="volume1" min="0" max="127" [(ngModel)]="volume1" (input)="onVolumeChange(volume1, 41)" />
+        
+            <label for="volume2">Volume HARMONIZER (CC 42): {{ volume2 }}</label>
+            <input class="volume-slider" type="range" id="volume2" min="0" max="127" [(ngModel)]="volume2" (input)="onVolumeChange(volume2, 42)" />
+        </div>
     </div>
+    
+    
+    
     <footer style="text-align:center">
-        v 0.0.8
+        v 0.0.9
     </footer>
 </body>
 </html>

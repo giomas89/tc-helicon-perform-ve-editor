@@ -30,6 +30,8 @@ export class AppComponent implements OnInit {
   tones: Tone[] = []; 
   selectedChannel: number;
   selectedTone: Tone | null = null; 
+  selectedMidiOutput: string | null = null;
+  selectedMidiInput: string | null = null;
 
   // Stato degli effetti
   EffectStates = {
@@ -43,6 +45,10 @@ export class AppComponent implements OnInit {
 
   // Program attivo
   activeProgram: number | null = null;
+
+  // Volumi
+  volume1: number = 0; // CC 41
+  volume2: number = 0; // CC 42
 
   constructor(private cdr: ChangeDetectorRef) {
     this.selectedChannel = 1; 
@@ -75,34 +81,19 @@ export class AppComponent implements OnInit {
     this.midiOutputs = WebMidi.outputs;
     this.midiInputs = WebMidi.inputs;
 
-    // Selezione automatica dell'output MIDI "Perform-VE"
-    this.midiOutput = this.midiOutputs.find(output =>
-        output.name.includes('Perform-VE') || output.name === 'Perform-VE MIDI Out'|| output.name === 'Perform-VE'
-    );
-    if (this.midiOutput) {
-        console.log(`Selected MIDI Output: ${this.midiOutput.name}`);
-    } else {
-        console.warn('No MIDI Output found for "Perform-VE" or "Perform-VE MIDI Out"');
-    }
+    // Imposta il dispositivo MIDI OUT selezionato se disponibile
+    this.selectedMidiOutput = this.midiOutputs.find(output =>
+        output.name.toLowerCase().startsWith('perform-ve')
+    )?.id || null;
 
-    // Selezione automatica dell'input MIDI "Perform-VE"
-    this.midiInput = this.midiInputs.find(input =>
-        input.name.includes('Perform-VE') || input.name === 'Perform-VE MIDI In' || input.name === 'Perform-VE'
-    );
-    if (this.midiInput) {
-        console.log(`Selected MIDI Input: ${this.midiInput.name}`);
+    // Imposta il dispositivo MIDI IN selezionato se disponibile
+    this.selectedMidiInput = this.midiInputs.find(input =>
+        input.name.toLowerCase().startsWith('perform-ve')
+    )?.id || null;
 
-        this.midiInput.addListener('controlchange', (event: any) => {
-            console.log('Control Change Event:', event);
-            this.updateControlStates(event.controller.number, event.rawValue ?? 0);
-            this.cdr.detectChanges();
-        });
-    } else {
-        console.warn('No MIDI Input found for "Perform-VE" or "Perform-VE MIDI In"');
-    }
-    
-    // Imposta il canale selezionato
-    this.selectedChannel = 1; // Puoi cambiare il canale se necessario
+    // Log degli output e input MIDI
+    console.log('Available MIDI Outputs:', this.midiOutputs);
+    console.log('Available MIDI Inputs:', this.midiInputs);
 }
 
 
@@ -114,6 +105,12 @@ export class AppComponent implements OnInit {
           this.selectedTone = selectedTone; 
           console.log(`Updated selected tone to: ${selectedTone.name}`);
         }
+        break;
+      case 41:
+        this.volume1 = value; // Aggiorna il volume 1
+        break;
+      case 42:
+        this.volume2 = value; // Aggiorna il volume 2
         break;
       case 51:
         this.EffectStates.isDoubleOn = value === 64;
@@ -176,9 +173,7 @@ export class AppComponent implements OnInit {
         this.midiOutput?.sendControlChange(56, value, { channels: this.selectedChannel });
         break;
     }
-}
-
-
+  }
 
   onToneSelect(tone: Tone) {
     console.log(`Selected tone: ${tone.name}`);
@@ -196,6 +191,14 @@ export class AppComponent implements OnInit {
         console.log(`Sent Program Change: ${program} on channel ${this.selectedChannel}`);
     } else {
         console.warn('No MIDI Output available to send Program Change');
+    }
+  }
+
+  // Funzioni per gestire gli slider
+  onVolumeChange(volume: number, cc: number) {
+    if (this.midiOutput) {
+      this.midiOutput.sendControlChange(cc, volume, { channels: this.selectedChannel });
+      console.log(`Sent volume change: ${volume} on CC ${cc}`);
     }
   }
 }
