@@ -1,9 +1,9 @@
 <!--
-    git add .
-    git commit -m "allineamento"
-    git push
-    ng build --configuration production --base-href /tc-helicon-perform-ve-editor/
-    ng deploy
+git add .
+git commit -m "allineamento"
+git push
+ng build --configuration production --base-href /tc-helicon-perform-ve-editor/
+ng deploy
 -->
 <!DOCTYPE html>
 <html lang="it">
@@ -20,6 +20,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="google-font.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
@@ -32,7 +33,7 @@
                 <div>
                     <label for="midiOutput">MIDI-OUT</label>
                     <select id="midiOutput" [(ngModel)]="selectedMidiOutput" (change)="onSelectMidiOutputChange($event)" class="styled-select">
-                        <option *ngFor="let output of midiOutputs" [value]="output.id">
+                        <option *ngFor="let output of aryMidiOutputs" [value]="output.id">
                             {{ output.name }}
                         </option>
                     </select>
@@ -41,7 +42,7 @@
                 <div>
                     <label for="midiInput">MIDI-IN</label>
                     <select id="midiInput" [(ngModel)]="selectedMidiInput" (change)="onSelectMidiInputChange($event)" class="styled-select">
-                        <option *ngFor="let input of midiInputs" [value]="input.id">
+                        <option *ngFor="let input of aryMidiInputs" [value]="input.id">
                             {{ input.name }}
                         </option>
                     </select>
@@ -152,6 +153,8 @@
             </div>
         </div>
         
+        <app-morph></app-morph>
+
         <div style="margin-top: 20px;">
             <label for="volume2">Volume HARMONIZER (CC 42): {{ volume2 }}</label>
             <div class="control-wrapper" style="display: flex; align-items:center; gap:8px;">

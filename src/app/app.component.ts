@@ -8,24 +8,20 @@ import { ChangeDetectorRef } from '@angular/core';
 
 // Risorse CC
 import { ccList, Tone } from './cc-list';
-import { toggleDouble } from './CC/double';
-import { toggleMorph } from './CC/morph';
-import { toggleHardTune } from './CC/hardtune';
-import { toggleXfx } from './CC/xfx';
-import { toggleEcho } from './CC/echo';
-import { toggleFilter } from './CC/filter';
+
+import { MorphComponent } from './Effects/morph/morph.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, MorphComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   title = 'TC Helicon Perform VE'; 
-  midiOutputs: Output[] = [];
-  midiInputs: Input[] = [];
+  aryMidiOutputs: Output[] = [];
+  aryMidiInputs: Input[] = [];
   midiOutput: Output | undefined;
   midiInput: Input | undefined;
   tones: Tone[] = []; 
@@ -81,14 +77,14 @@ export class AppComponent implements OnInit {
   onMidiEnabled() {
     console.log('WebMIDI enabled!');
 
-    this.midiOutputs = WebMidi.outputs;
-    this.midiInputs = WebMidi.inputs;
+    this.aryMidiOutputs = WebMidi.outputs;
+    this.aryMidiInputs = WebMidi.inputs;
 
-    console.log('Available MIDI Outputs:', this.midiOutputs);
-    console.log('Available MIDI Inputs:', this.midiInputs);
+    console.log('Available MIDI Outputs:', this.aryMidiOutputs);
+    console.log('Available MIDI Inputs:', this.aryMidiInputs);
 
     // Selezione del dispositivo MIDI OUT
-    const selectedOutput = this.midiOutputs.find(output =>
+    const selectedOutput = this.aryMidiOutputs.find(output =>
         output.name.toLowerCase().startsWith('perform-ve')
     );
 
@@ -104,7 +100,7 @@ export class AppComponent implements OnInit {
     }
 
     // Selezione del dispositivo MIDI IN
-    const selectedInput = this.midiInputs.find(input =>
+    const selectedInput = this.aryMidiInputs.find(input =>
         input.name.toLowerCase().startsWith('perform-ve')
     );
 
@@ -119,6 +115,9 @@ export class AppComponent implements OnInit {
     } else {
         console.warn('No suitable MIDI input found.');
     }
+
+
+    // this.requestAllCcValues(); // Aggiungi questa riga
   }
 
   updateControlStates(controllerNumber: number, value: number) {
@@ -175,7 +174,7 @@ export class AppComponent implements OnInit {
     // Determinare il valore da inviare (127 per ON, 0 per OFF)
     const value = this.EffectStates[effect] ? 127 : 0;
 
-    // Inviare il messaggio MIDI corrispondente
+    // INVIA il messaggio MIDI corrispondente
     switch (effect) {
       case 'isDoubleOn':
         this.midiOutput?.sendControlChange(51, value, { channels: this.selectedChannel });
@@ -209,12 +208,15 @@ export class AppComponent implements OnInit {
   }
 
   sendProgramChange(program: number) {
+    console.log('Send PC');
     if (this.midiOutput) {
       this.midiOutput.sendProgramChange(program, { channels: this.selectedChannel });
       this.activeProgram = program; // Aggiorna il programma attivo
     } else {
       console.warn('No MIDI Output available to send Program Change');
     }
+
+    // this.requestAllCcValues();
   }
 
   // Funzioni per gestire gli slider
@@ -250,7 +252,7 @@ export class AppComponent implements OnInit {
 
   onSelectMidiOutputChange(event: any) {
     const selectedId = event.target.value;
-    const selectedOutput = this.midiOutputs.find(output => output.id === selectedId);
+    const selectedOutput = this.aryMidiOutputs.find(output => output.id === selectedId);
     
     if (selectedOutput) {
       this.midiOutput = selectedOutput;
@@ -261,7 +263,7 @@ export class AppComponent implements OnInit {
   
   onSelectMidiInputChange(event: any) {
     const selectedId = event.target.value;
-    const selectedInput = this.midiInputs.find(input => input.id === selectedId);
+    const selectedInput = this.aryMidiInputs.find(input => input.id === selectedId);
     
     if (selectedInput) {
       this.midiInput = selectedInput;
@@ -270,5 +272,24 @@ export class AppComponent implements OnInit {
       console.log("Selected MIDI Input: ${selectedInput.name}");
     }
   }
+
+  // requestAllCcValues() {
+  //   console.log("requestAllCcValues");
+  //   if (this.midiOutput) {
+  //     const ccNumbers = [19, 41, 42, 51, 52, 53, 54, 55, 56]; // Lista dei CC da interrogare
+  //     ccNumbers.forEach(cc => {
+  //       const value = this.midiOutput?.sendControlChange(cc, 0, { channels: this.selectedChannel });
+  //       console.log(`Requesting value for CC: ${cc}, returned value:`, value);
+  //     });
+  //   } else {
+  //     console.warn('No MIDI output available to request CC values.');
+  //   }
+  // }
   
+  
+
+  
+  
+  
+
 }
