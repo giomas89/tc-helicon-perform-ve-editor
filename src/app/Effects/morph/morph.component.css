@@ -27,7 +27,7 @@ Stile per il contenitore dei toggle buttons
 
 .toggle-button {
  flex: 1; /* Ogni bottone occupa lo stesso spazio */
- height: 32px; /* Altezza fissa per i bottoni */
+ height: 46px; /* Altezza fissa per i bottoni */
  background-color: #fff; /* Sfondo di default */
  color: black; /* Colore testo di default */
  font-weight: 700;

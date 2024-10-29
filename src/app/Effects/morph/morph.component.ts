@@ -19,7 +19,7 @@ export class MorphComponent implements AfterViewInit {
   midiOutput: Output | undefined;
   midiInput: Input | undefined;
   selectedShiftValue: number = 64;
-  isToggleActive: boolean = false;  
+  isStyleToggleActive: boolean = false;  // Rinominato da isToggleActive a isStyleToggleActive
   morphStyleValue: number = 0; // Shared value between slider and knob
 
   constructor(private cdr: ChangeDetectorRef) {
@@ -33,7 +33,7 @@ export class MorphComponent implements AfterViewInit {
   }
 
   getSliderDescription(value: number): string {
-    if (this.isToggleActive) {
+    if (this.isStyleToggleActive) {
       return 'SYNTH VOCODER';
     }
     const style = this.morphStyleControl?.styles?.find(s => s.id === value);
@@ -54,7 +54,7 @@ export class MorphComponent implements AfterViewInit {
 
     if (morphControl) {
       morphControl.currentValue = newValue;
-      this.isToggleActive = false;
+      this.isStyleToggleActive = false; // Imposta a false quando si cambia lo slider
       this.sendMidiMessage(morphControl.cc, newValue);
       this.onKnobChange({ value: newValue }); // Sync the value with the knob
       this.cdr.detectChanges();
@@ -71,7 +71,7 @@ export class MorphComponent implements AfterViewInit {
         if (style.id === value) {
           this.sendMidiMessage(morphControl.cc, value);
           console.log(`Sending MIDI: CC ${morphControl.cc}, Value ${value}`);
-          this.isToggleActive = true;
+          this.isStyleToggleActive = true; // Toggle attivato
         }
       });
       this.cdr.detectChanges();
@@ -161,11 +161,17 @@ export class MorphComponent implements AfterViewInit {
   }
 
   onKnobChange(event: { value: number }) {
-    console.log(event); // Aggiungi questo log per vedere la struttura dell'evento
     this.morphStyleValue = event.value;
+    const percentage = this.calculatePercentage(this.morphStyleValue);
+    console.log(`Knob changed: ${this.morphStyleValue} (${percentage}%)`);
     this.sendMidiMessage(this.morphStyleControl!.cc, this.morphStyleValue);
     this.cdr.detectChanges(); // Rileva le modifiche
   }
 
-
+  calculatePercentage(value: number): string {
+    if (value === 0 && this.isStyleToggleActive) { // Controlla se è zero e se un toggle è attivo
+      return 'FIXED'; // Restituisce "-" per il valore 0
+    }
+    return `${value * 5}%`; // Altrimenti, restituisce la percentuale
+  }
 }

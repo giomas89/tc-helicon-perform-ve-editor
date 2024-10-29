@@ -6,43 +6,41 @@ ng build --configuration production --base-href /tc-helicon-perform-ve-editor/
 ng deploy
 -->
 <div *ngIf="morphStyleControl" class="morph-control-container">
-  <h3>MORPH</h3> <!-- Main title -->
-  <h5>STYLE</h5> <!-- Subtitle -->
+  <h2>MORPH</h2> <!-- Titolo principale -->
+  <h4>STYLE</h4> <!-- Sottotitolo -->
 
-  <input
-    id="morph-style-slider"
-    type="range"
-    min="0"
-    max="20"
-    [(ngModel)]="morphStyleValue"
-    (input)="onSliderChange($event)"
-    class="morph-slider"
-  />
+  <div style="display:flex; align-items:center;justify-content:between">
 
-  <p-knob
-    [(ngModel)]="morphStyleValue"
-    [min]="0"
-    [max]="20"
-    [size]="150"
-    (onChange)="onKnobChange({ value: $event})" 
-  ></p-knob>
-
-  <div>
-    <span>{{ getSliderDescription(morphStyleControl?.currentValue || 0) }}</span>
-  </div>
-
-  <!-- Toggle Buttons for values 21-29 -->
-  <div class="toggle-buttons-container">
-    <div class="button-row" *ngFor="let row of getRows((morphStyleControl?.styles || []).slice(21, 30))">
-      <button
-        *ngFor="let style of row"
-        class="toggle-button"
-        [class.on]="style.currentValue === 20"
-        [class.off]="style.currentValue !== 20"
-        (click)="onToggleButtonClick(style.id)"
-      >
-        {{ style.name }}
-      </button>
+    <div class="knob-container">
+      <label for="morph-style-knob" style="font-weight:700">GENDER</label>
+      <p-knob
+        [(ngModel)]="morphStyleValue"
+        [min]="0"
+        [max]="20"
+        [size]="150"
+        [valueTemplate]="calculatePercentage(morphStyleValue)"         
+        valueColor="MediumTurquoise" 
+        rangeColor="SlateGray" 
+        (onChange)="onKnobChange({ value: $event })" 
+      ></p-knob>
+    </div>
+    
+    
+    <div>
+      <label for="morph-style-knob" style="font-weight:700">SYNTH VOCODER</label>
+      <div class="toggle-buttons-container">
+        <div class="button-row" *ngFor="let row of getRows((morphStyleControl?.styles || []).slice(21, 30))">
+          <button
+          *ngFor="let style of row"
+          class="toggle-button"
+          [class.on]="style.currentValue === 20"
+          [class.off]="style.currentValue !== 20"
+          (click)="onToggleButtonClick(style.id)"
+          >
+          {{ style.name }}
+        </button>
+      </div>
     </div>
   </div>
+</div>
 </div>
