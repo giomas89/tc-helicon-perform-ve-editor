@@ -272,3 +272,43 @@ label {
   border: 2px solid rgb(5, 70, 5); 
   color: white; /* Testo bianco quando è attivo */
 }
+
+
+/* Stili per il contenitore delle tab */
+.p-tabView {
+    border: 1px solid #ccc; /* Aggiunge un bordo */
+    border-radius: 4px; /* Angoli arrotondati */
+    overflow: hidden; /* Nasconde le parti in eccesso */
+}
+
+/* Stili per i titoli delle tab */
+.p-tabPanel {
+    display: none; /* Nasconde i contenuti delle tab per impostazione predefinita */
+}
+
+/* Stile per i titoli delle tab attivi */
+.p-tabPanel.active {
+    display: block; /* Mostra il contenuto della tab attiva */
+    background-color: #f9f9f9; /* Colore di sfondo per il contenuto attivo */
+    padding: 10px; /* Padding interno */
+}
+
+/* Stile per i pulsanti delle tab */
+.p-tabView .p-tabPanel header {
+    display: flex; /* Utilizza Flexbox per allineare */
+    justify-content: space-around; /* Spaziatura uniforme */
+    padding: 10px; /* Padding interno */
+    cursor: pointer; /* Cambia il cursore per indicare che è cliccabile */
+    background-color: #e0e0e0; /* Colore di sfondo per i titoli delle tab */
+    transition: background-color 0.3s; /* Transizione per l'effetto hover */
+}
+
+.p-tabView .p-tabPanel header:hover {
+    background-color: #d0d0d0; /* Cambia colore al passaggio del mouse */
+}
+
+/* Stile per le tab attive */
+.p-tabView .p-tabPanel.active header {
+    background-color: #ccc; /* Colore di sfondo per la tab attiva */
+    font-weight: bold; /* Grassetto per il titolo attivo */
+}

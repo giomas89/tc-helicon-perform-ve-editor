@@ -153,7 +153,30 @@ ng deploy
             </div>
         </div>
         
-        <app-morph></app-morph>
+        <div>
+            <h3 style="font-weight: bold; text-align: center;">TC Helicon Perform VE</h3>
+            
+            <p-tabView>
+                <p-tabPanel header="Double" [ngClass]="{'active': activeTab === 'double'}" (click)="activeTab = 'double'">
+                    <app-double></app-double>
+                </p-tabPanel>
+                <p-tabPanel header="HardTune" [ngClass]="{'active': activeTab === 'hardTune'}" (click)="activeTab = 'hardTune'">
+                    <app-hard-tune></app-hard-tune>
+                </p-tabPanel>
+                <p-tabPanel header="Morph" [ngClass]="{'active': activeTab === 'morph'}" (click)="activeTab = 'morph'">
+                    <app-morph></app-morph>
+                </p-tabPanel>
+                <p-tabPanel header="XFX" [ngClass]="{'active': activeTab === 'xfx'}" (click)="activeTab = 'xfx'">
+                    <app-xfx></app-xfx>
+                </p-tabPanel>
+                <p-tabPanel header="Echo" [ngClass]="{'active': activeTab === 'echo'}" (click)="activeTab = 'echo'">
+                    <app-echo></app-echo>
+                </p-tabPanel>
+                <p-tabPanel header="Filter" [ngClass]="{'active': activeTab === 'filter'}" (click)="activeTab = 'filter'">
+                    <app-filter></app-filter>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
 
         <div style="margin-top: 20px;">
             <label for="volume2">Volume HARMONIZER (CC 42): {{ volume2 }}</label>
@@ -176,7 +199,7 @@ ng deploy
     
     
     <footer style="text-align:center">
-        v 0.0.20
+        v 0.0.21
     </footer>
 </body>
 </html>

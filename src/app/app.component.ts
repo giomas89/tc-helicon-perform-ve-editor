@@ -5,18 +5,28 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 
+import { TabViewModule } from 'primeng/tabview';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 // Risorse CC
 import { ccList, Tone } from './cc-list';
 
+import { DoubleComponent } from './Effects/double/double.component';
 import { MorphComponent } from './Effects/morph/morph.component';
+import { HardtuneComponent } from './Effects/hardtune/hardtune.component';
+import { XfxComponent } from './Effects/xfx/xfx.component';
+import { EchoComponent } from './Effects/echo/echo.component';
+import { FilterComponent } from './Effects/filter/filter.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule, MorphComponent],
+  imports: [RouterOutlet, CommonModule, FormsModule, 
+    TabViewModule,
+    DoubleComponent,MorphComponent,HardtuneComponent,XfxComponent,EchoComponent,FilterComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent implements OnInit {
   title = 'TC Helicon Perform VE'; 
@@ -29,7 +39,9 @@ export class AppComponent implements OnInit {
   selectedMidiOutput: string | null = null;
   selectedMidiInput: string | null = null;
   // selectedChannel: number;
-  selectedChannel: number = 1; 
+  selectedChannel: number = 1;   
+  activeTab: string = 'double'; // Imposta la tab attiva di default
+
 
   // Stato degli effetti
   EffectStates = {
