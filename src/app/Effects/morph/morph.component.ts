@@ -2,29 +2,31 @@ import { Component, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { morphControls, MorphControl } from './cc-morph';
 import { WebMidi, Output, Input } from 'webmidi';
+import { KnobModule } from 'primeng/knob';
+import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @Component({
   selector: 'app-morph',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, KnobModule, FormsModule],
   templateUrl: './morph.component.html',
-  styleUrls: ['./morph.component.css']
+  styleUrls: ['./morph.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MorphComponent implements AfterViewInit {
   morphControls: MorphControl[] = morphControls;
   midiOutput: Output | undefined;
   midiInput: Input | undefined;
   selectedShiftValue: number = 64;
-  isToggleActive: boolean = false;
+  isToggleActive: boolean = false;  
+  morphStyleValue: number = 0; // Shared value between slider and knob
 
   constructor(private cdr: ChangeDetectorRef) {
     this.initializeMidiOutput();
   }
 
-  ngAfterViewInit() {
-    this.drawKnob();
-    this.setupKnobInteraction();
-  }
+  ngAfterViewInit() {}
 
   get morphStyleControl(): MorphControl | undefined {
     return this.morphControls.find(control => control.cc === 24);
@@ -46,37 +48,32 @@ export class MorphComponent implements AfterViewInit {
     return rows;
   }
 
-  onSliderChange(event: any) {
-    const newValue = +event.target.value;
-    const morphControl = this.morphStyleControl; // Salva la variabile per una migliore leggibilità
+  onSliderChange(event: Event) {
+    const newValue = (event.target as HTMLInputElement).valueAsNumber;
+    const morphControl = this.morphStyleControl;
 
     if (morphControl) {
       morphControl.currentValue = newValue;
-      this.isToggleActive = false; // Spegne il toggle
+      this.isToggleActive = false;
       this.sendMidiMessage(morphControl.cc, newValue);
-      this.drawKnob(); // Ridisegna il knob in base al nuovo valore
+      this.onKnobChange({ value: newValue }); // Sync the value with the knob
       this.cdr.detectChanges();
     }
   }
 
   onToggleButtonClick(value: number) {
-    const morphControl = this.morphStyleControl; // Salva la variabile per una migliore leggibilità
+    const morphControl = this.morphStyleControl;
 
-    if (morphControl && morphControl.styles) { // Verifica che entrambe le variabili siano definite
+    if (morphControl && morphControl.styles) {
       console.log(`Toggle button clicked: ${value}`);
-
       morphControl.styles.forEach(style => {
+        style.currentValue = style.id === value ? 20 : 0;
         if (style.id === value) {
-          style.currentValue = 20; // Attiva il toggle
-          const midiValue = style.id; // Invia i valori da 21 a 29
-          this.sendMidiMessage(morphControl.cc, midiValue); // Invia il valore MIDI corretto
-          console.log(`Sending MIDI: CC ${morphControl.cc}, Value ${midiValue}`); // Mostra il valore corretto
-          this.isToggleActive = true; // Imposta il toggle come attivo
-        } else {
-          style.currentValue = 0; // Reset per i toggle non attivi
+          this.sendMidiMessage(morphControl.cc, value);
+          console.log(`Sending MIDI: CC ${morphControl.cc}, Value ${value}`);
+          this.isToggleActive = true;
         }
       });
-
       this.cdr.detectChanges();
     } else {
       console.warn('MorphStyleControl or its styles are undefined.');
@@ -111,16 +108,11 @@ export class MorphComponent implements AfterViewInit {
           );
 
           if (this.midiInput) {
-            this.midiInput.addListener('controlchange', (event: any) => {
-              this.handleControlChange(event);
-            });
-            // Aggiungi il listener per i messaggi SysEx
-            this.midiInput.addListener('sysex', (event: any) => {
-              this.handleSysEx(event);
-            });
+            this.midiInput.addListener('controlchange', event => this.handleControlChange(event));
+            this.midiInput.addListener('sysex', event => this.handleSysEx(event));
           } else {
             console.warn('No suitable MIDI input found.');
-          }          
+          }
         })
         .catch(err => console.error('WebMidi could not be enabled', err));
     } else {
@@ -131,8 +123,8 @@ export class MorphComponent implements AfterViewInit {
   handleControlChange(event: any) {
     console.log('MIDI event received:', event);
 
-    const ccNumber = event.data[1]; // CC number
-    const ccValue = event.data[2]; // Valore
+    const ccNumber = event.data[1];
+    const ccValue = event.data[2];
 
     console.log(`Received CC: ${ccNumber}, Value: ${ccValue}`);
 
@@ -147,15 +139,14 @@ export class MorphComponent implements AfterViewInit {
       control.currentValue = ccValue;
 
       if (ccValue >= 21 && ccValue <= 29) {
-        const styleId = ccValue - 21; // Calcola l'ID dello stile
-        this.onToggleButtonClick(styleId); // Attiva il toggle corrispondente
+        const styleId = ccValue - 21;
+        this.onToggleButtonClick(styleId);
         console.log(`Toggle activated for style ID: ${styleId}`);
         return;
       }
 
       if (ccValue >= 0 && ccValue <= 20) {
         this.selectedShiftValue = ccValue;
-        this.drawKnob(); // Ridisegna il knob in base al valore CC ricevuto
         console.log(`Slider value updated to: ${this.selectedShiftValue}`);
       }
 
@@ -166,57 +157,15 @@ export class MorphComponent implements AfterViewInit {
   }
 
   handleSysEx(event: any) {
-    console.log('SysEx message received:', event.data); // Elenca i dati SysEx ricevuti
-    // Puoi elaborare ulteriormente i dati SysEx qui
+    console.log('SysEx message received:', event.data);
   }
 
-  drawKnob() {
-    const canvas = <HTMLCanvasElement>document.getElementById('morph-style-knob');
-    const ctx = canvas.getContext('2d');
-
-    // Verifica che ctx non sia null
-    if (ctx) {
-        const value = this.morphStyleControl?.currentValue || 0;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.beginPath();
-        ctx.arc(canvas.width / 2, canvas.height / 2, 40, 0, 2 * Math.PI);
-        ctx.strokeStyle = '#ccc';
-        ctx.lineWidth = 10;
-        ctx.stroke();
-
-        const startAngle = -Math.PI / 2;
-        const endAngle = startAngle + (2 * Math.PI * (value / 20));
-        ctx.beginPath();
-        ctx.arc(canvas.width / 2, canvas.height / 2, 40, startAngle, endAngle, false);
-        ctx.strokeStyle = '#e500e5';
-        ctx.lineWidth = 10;
-        ctx.stroke();
-    } else {
-        console.error('Failed to get canvas 2D context.');
-    }
-}
-
-
-  setupKnobInteraction() {
-    const canvas = <HTMLCanvasElement>document.getElementById('morph-style-knob');
-    canvas.addEventListener('click', (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const angle = Math.atan2(y - canvas.height / 2, x - canvas.width / 2);
-      const value = Math.round(((angle + Math.PI / 2) / (2 * Math.PI)) * 20);
-
-      this.morphStyleControl!.currentValue = Math.max(0, Math.min(20, value));
-      this.drawKnob();
-      this.onKnobChange(this.morphStyleControl!.currentValue);
-    });
+  onKnobChange(event: { value: number }) {
+    console.log(event); // Aggiungi questo log per vedere la struttura dell'evento
+    this.morphStyleValue = event.value;
+    this.sendMidiMessage(this.morphStyleControl!.cc, this.morphStyleValue);
+    this.cdr.detectChanges(); // Rileva le modifiche
   }
 
-  onKnobChange(value: number) {
-    // Logica per gestire il cambiamento del valore del knob
-    console.log("Knob value changed to:", value);
-    this.sendMidiMessage(this.morphStyleControl!.cc, value);
-  }
-  
+
 }
