@@ -1,16 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WebMidi, Output, Input } from 'webmidi';
+import { ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef } from '@angular/core';
-
 import { TabViewModule } from 'primeng/tabview';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-// Risorse CC
-import { ccList, Tone } from './cc-list';
-
+import { MidiService } from './midi-settings.service';
 import { DoubleComponent } from './Effects/double/double.component';
 import { MorphComponent } from './Effects/morph/morph.component';
 import { HardtuneComponent } from './Effects/hardtune/hardtune.component';
@@ -21,27 +17,25 @@ import { FilterComponent } from './Effects/filter/filter.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule, 
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    FormsModule,
     TabViewModule,
-    DoubleComponent,MorphComponent,HardtuneComponent,XfxComponent,EchoComponent,FilterComponent],
+    DoubleComponent,
+    MorphComponent,
+    HardtuneComponent,
+    XfxComponent,
+    EchoComponent,
+    FilterComponent
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  schemas:[CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent implements OnInit {
-  title = 'TC Helicon Perform VE'; 
-  aryMidiOutputs: Output[] = [];
-  aryMidiInputs: Input[] = [];
-  midiOutput: Output | undefined;
-  midiInput: Input | undefined;
-  tones: Tone[] = []; 
-  selectedTone: Tone | null = null; 
-  selectedMidiOutput: string | null = null;
-  selectedMidiInput: string | null = null;
-  // selectedChannel: number;
-  selectedChannel: number = 1;   
-  activeTab: string = 'double'; // Imposta la tab attiva di default
-
+  title = 'TC Helicon Perform VE';
+  activeTab: string | null = 'hardtune'; // Allowing string and initializing with 'double'
 
   // Stato degli effetti
   EffectStates = {
@@ -53,100 +47,28 @@ export class AppComponent implements OnInit {
     isFilterOn: false,
   };
 
-  // Program attivo
   activeProgram: number | null = null;
 
-  // Volumi
-  volume1: number = 0; // CC 41
-  volume2: number = 0; // CC 42
-
-  constructor(private cdr: ChangeDetectorRef) {
-    this.selectedChannel = 1; 
-  }
+  constructor(private cdr: ChangeDetectorRef, public midiService: MidiService) {}
 
   ngOnInit(): void {
-    this.enableWebMidi();
-    this.initializeTones(); 
-  }
-
-  initializeTones() {
-    const toneCC = ccList.find(entry => entry.CC === 19);
-    if (toneCC) {
-      this.tones = toneCC.values as Tone[];
-    }
-  }
-
-  enableWebMidi() {
-    if (WebMidi.supported) {
-      WebMidi.enable()
-        .then(() => this.onMidiEnabled())
-        .catch(err => console.error('WebMidi could not be enabled', err));
-    } else {
-      console.error('WebMIDI is not supported by this browser.');
-    }
-  }
-
-  onMidiEnabled() {
-    console.log('WebMIDI enabled!');
-
-    this.aryMidiOutputs = WebMidi.outputs;
-    this.aryMidiInputs = WebMidi.inputs;
-
-    console.log('Available MIDI Outputs:', this.aryMidiOutputs);
-    console.log('Available MIDI Inputs:', this.aryMidiInputs);
-
-    // Selezione del dispositivo MIDI OUT
-    const selectedOutput = this.aryMidiOutputs.find(output =>
-        output.name.toLowerCase().startsWith('perform-ve')
-    );
-
-    if (selectedOutput) {
-        this.selectedMidiOutput = selectedOutput.id;
-        this.midiOutput = selectedOutput;
-        console.log("Automatically selected output device: ID: ${this.selectedMidiOutput}, Name: ${this.midiOutput.name}");
-        
-        // Invio messaggio di controllo per conferma
-        this.midiOutput.sendControlChange(19, 0, { channels: this.selectedChannel });
-    } else {
-        console.warn('No suitable MIDI output found.');
-    }
-
-    // Selezione del dispositivo MIDI IN
-    const selectedInput = this.aryMidiInputs.find(input =>
-        input.name.toLowerCase().startsWith('perform-ve')
-    );
-
-    if (selectedInput) {
-        this.selectedMidiInput = selectedInput.id;
-        this.midiInput = selectedInput;
-        console.log("Automatically selected input device: ID: ${this.selectedMidiInput}, Name: ${this.midiInput.name}");
-
-        // Aggiungi listener per messaggi MIDI
-        this.midiInput.addListener('midimessage', this.handleMidiMessage.bind(this));
-        console.log("Listening for MIDI messages on input device: ${this.midiInput.name}");
-    } else {
-        console.warn('No suitable MIDI input found.');
-    }
-
-
-    // this.requestAllCcValues(); // Aggiungi questa riga
+   // Ascolta i messaggi MIDI dal servizio
+    this.midiService.midiMessageSubject.subscribe((message) => {
+      const [status, controllerNumber, value] = message;
+      this.updateControlStates(controllerNumber, value);
+    });
   }
 
   updateControlStates(controllerNumber: number, value: number) {
-    console.log('upd:',controllerNumber,value);
+    console.log('upd:', controllerNumber, value);
     switch (controllerNumber) {
       case 19:
-        const selectedTone = this.tones.find(tone => tone.value === value);
-        if (selectedTone) {
-          this.selectedTone = selectedTone; 
-        }
-        console.log(this.selectedTone?.value);
         break;
       case 41:
-        this.volume1 = value; // Aggiorna il volume 1
+        // Aggiorna il volume 1
         break;
       case 42:
-        this.volume2 = value; // Aggiorna il volume 2
+        // Aggiorna il volume 2
         break;
       case 51:
         this.EffectStates.isDoubleOn = value === 64;
@@ -167,16 +89,10 @@ export class AppComponent implements OnInit {
         this.EffectStates.isFilterOn = value === 64;
         break;
       default:
-        console.warn("Unrecognized controller number: ${controllerNumber}");
+        console.warn(`Unrecognized controller number: ${controllerNumber}`);
     }
 
     this.cdr.detectChanges(); // Forza il rilevamento dei cambiamenti
-  }
-
-  handleMidiMessage(message: any) {
-    const [status, controllerNumber, value] = message.data;
-    console.log("RECEIVED MIDI message:", message.data); // Log dei messaggi MIDI ricevuti
-    this.updateControlStates(controllerNumber, value);
   }
 
   toggleEffect(effect: keyof typeof this.EffectStates) {
@@ -189,119 +105,74 @@ export class AppComponent implements OnInit {
     // INVIA il messaggio MIDI corrispondente
     switch (effect) {
       case 'isDoubleOn':
-        this.midiOutput?.sendControlChange(51, value, { channels: this.selectedChannel });
+        this.midiService.midiOutput?.sendControlChange(51, value, { channels: this.midiService.selectedChannel });
         break;
       case 'isMorphOn':
-        this.midiOutput?.sendControlChange(52, value, { channels: this.selectedChannel });
+        this.midiService.midiOutput?.sendControlChange(52, value, { channels: this.midiService.selectedChannel });
         break;
       case 'isHardTuneOn':
-        this.midiOutput?.sendControlChange(53, value, { channels: this.selectedChannel });
+        this.midiService.midiOutput?.sendControlChange(53, value, { channels: this.midiService.selectedChannel });
         break;
       case 'isXfxOn':
-        this.midiOutput?.sendControlChange(54, value, { channels: this.selectedChannel });
+        this.midiService.midiOutput?.sendControlChange(54, value, { channels: this.midiService.selectedChannel });
         break;
       case 'isEchoOn':
-        this.midiOutput?.sendControlChange(55, value, { channels: this.selectedChannel });
+        this.midiService.midiOutput?.sendControlChange(55, value, { channels: this.midiService.selectedChannel });
         break;
       case 'isFilterOn':
-        this.midiOutput?.sendControlChange(56, value, { channels: this.selectedChannel });
+        this.midiService.midiOutput?.sendControlChange(56, value, { channels: this.midiService.selectedChannel });
         break;
       default:
-        console.warn("Unrecognized effect: ${effect}");
-    }
-  }
-
-  onToneSelect(tone: Tone) {
-    this.selectedTone = tone;
-
-    if (this.midiOutput) {
-      this.midiOutput.sendControlChange(19, tone.value, { channels: this.selectedChannel });
+        console.warn(`Unrecognized effect: ${effect}`);
     }
   }
 
   sendProgramChange(program: number) {
     console.log('Send PC');
-    if (this.midiOutput) {
-      this.midiOutput.sendProgramChange(program, { channels: this.selectedChannel });
-      this.activeProgram = program; // Aggiorna il programma attivo
-    } else {
-      console.warn('No MIDI Output available to send Program Change');
-    }
-
-    // this.requestAllCcValues();
+    this.midiService.midiOutput?.sendProgramChange(program, { channels: this.midiService.selectedChannel });
+    this.activeProgram = program; // Aggiorna il programma attivo
   }
 
   // Funzioni per gestire gli slider
   onVolumeChange(volume: number, cc: number) {
-    if (this.midiOutput) {
-      this.midiOutput.sendControlChange(cc, volume, { channels: this.selectedChannel });
-    } else {
-      console.warn('No MIDI Output available to send volume change');
-    }
+    this.midiService.midiOutput?.sendControlChange(cc, volume, { channels: this.midiService.selectedChannel });
   }
 
-  // Funzione per resettare il volume e aggiornare lo slider
   resetVolume(cc: number) {
     if (cc === 41) {
-      this.volume1 = 0; // Resetta volume1
-      this.onVolumeChange(this.volume1, 41); // Invia il CC 41 con valore 0
+      // Resetta volume1
+      this.onVolumeChange(0, 41); // Invia il CC 41 con valore 0
     } else if (cc === 42) {
-      this.volume2 = 0; // Resetta volume2
-      this.onVolumeChange(this.volume2, 42); // Invia il CC 42 con valore 0
+      // Resetta volume2
+      this.onVolumeChange(0, 42); // Invia il CC 42 con valore 0
     }
   }
 
   setMaxVolume(cc: number) {
     const maxVolume = 127;
-    if (cc === 41) {
-        this.volume1 = maxVolume;
-    } else if (cc === 42) {
-        this.volume2 = maxVolume;
-    }
     this.onVolumeChange(maxVolume, cc);
-}
-
+  }
 
   onSelectMidiOutputChange(event: any) {
     const selectedId = event.target.value;
-    const selectedOutput = this.aryMidiOutputs.find(output => output.id === selectedId);
+    this.midiService.selectedMidiOutput = selectedId;
+    const selectedOutput = this.midiService.aryMidiOutputs.find(output => output.id === selectedId);
     
     if (selectedOutput) {
-      this.midiOutput = selectedOutput;
-      this.selectedMidiOutput = selectedOutput.id;
-      console.log("Selected MIDI Output: ${selectedOutput.name}");
+      this.midiService.midiOutput = selectedOutput;
+      console.log(`Selected MIDI Output: ${selectedOutput.name}`);
     }
   }
-  
+
   onSelectMidiInputChange(event: any) {
     const selectedId = event.target.value;
-    const selectedInput = this.aryMidiInputs.find(input => input.id === selectedId);
+    this.midiService.selectedMidiInput = selectedId;
+    const selectedInput = this.midiService.aryMidiInputs.find(input => input.id === selectedId);
     
-    if (selectedInput) {
-      this.midiInput = selectedInput;
-      this.selectedMidiInput = selectedInput.id;
-      this.midiInput.addListener('midimessage', this.handleMidiMessage.bind(this));
-      console.log("Selected MIDI Input: ${selectedInput.name}");
-    }
+    // if (selectedInput) {
+    //   this.midiService.midiInput = selectedInput;
+    //   this.midiService.midiInput.addListener('midimessage', this.midiService.handleMidiMessage.bind(this));
+    //   console.log(`Selected MIDI Input: ${selectedInput.name}`);
+    // }
   }
-
-  // requestAllCcValues() {
-  //   console.log("requestAllCcValues");
-  //   if (this.midiOutput) {
-  //     const ccNumbers = [19, 41, 42, 51, 52, 53, 54, 55, 56]; // Lista dei CC da interrogare
-  //     ccNumbers.forEach(cc => {
-  //       const value = this.midiOutput?.sendControlChange(cc, 0, { channels: this.selectedChannel });
-  //       console.log(`Requesting value for CC: ${cc}, returned value:`, value);
-  //     });
-  //   } else {
-  //     console.warn('No MIDI output available to request CC values.');
-  //   }
-  // }
-  
-  
-
-  
-  
-  
-
 }

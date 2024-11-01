@@ -1,21 +1,59 @@
-<!-- <div>
+<div>
     <h2>Scegli la tonalità (CC 19):</h2>
-    <div class="tone-buttons">
-        <button (click)="onToneSelect({ value: 0, name: 'Natural' })" 
-                [ngClass]="{'active': selectedTone?.value === 0}" class="tone-button-natural">
+    <div style="display: flex; align-items: end">
+  
+      <div class="knob-container">
+        <label for="morph-style-knob" style="font-weight: 700">AMOUNT</label>
+  
+        <div style="display: flex; align-items: end">
+          <!-- Bottone 0% -->
+          <button (click)="onKnobChange({value: 0});" class="amount-button">0%</button>
+          
+          <p-knob
+            [(ngModel)]="hardtuneAmountValue"
+            [min]="0"
+            [max]="127"
+            [size]="150"
+            [valueTemplate]="calculatePercentage(hardtuneAmountValue)"         
+            valueColor="red" 
+            rangeColor="SlateGray" 
+            (onChange)="onKnobChange({ value: $event })">
+          </p-knob>
+  
+          <!-- Bottone 100% -->
+          <button (click)="onKnobChange({value: 127});" class="amount-button">100%</button>
+        </div>
+      </div>
+  
+      <div class="key-buttons" style="flex-grow: 1">
+        <label for="morph-style-knob" style="font-weight: 700">KEY</label>
+        
+        <button (click)="onKeySelect({ id: 0, name: 'Natural' })" 
+                [ngClass]="{'active': selectedKey?.id === 0}" class="key-button-natural">
             Natural
         </button>
-        <div style="display:flex">
-            <button *ngFor="let tone of tones.slice(1, tones.length - 1)" 
-                    [ngClass]="{'active': selectedTone?.value === tone.value}"
-                    (click)="onToneSelect(tone)">
-                {{ tone.name }}
-            </button>
+  
+        <div class="key-button-container">
+          <button *ngFor="let key of keys.slice(1, 7)" 
+                  [ngClass]="{'active': selectedKey?.id === key.id}" 
+                  (click)="onKeySelect(key)">
+              {{ key.name }}
+          </button>
         </div>
-        <button (click)="onToneSelect({ value: 13, name: 'Chromatic' })" 
-                [ngClass]="{'active': selectedTone?.value === 13}" class="tone-button-chromatic">
+  
+        <div class="key-button-container">
+          <button *ngFor="let key of keys.slice(7, keys.length - 1)" 
+                  [ngClass]="{'active': selectedKey?.id === key.id}" 
+                  (click)="onKeySelect(key)">
+              {{ key.name }}
+          </button>
+        </div>
+        
+        <button (click)="onKeySelect({ id: 13, name: 'Chromatic' })" 
+                [ngClass]="{'active': selectedKey?.id === 13}" class="key-button-chromatic">
             Chromatic
         </button>
+      </div>
     </div>
-</div>
--->
+  </div>
+  

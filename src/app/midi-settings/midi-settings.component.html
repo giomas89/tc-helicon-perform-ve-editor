@@ -1,0 +1,33 @@
+<div style="text-align:center">
+    <div class="device-selection" style="display:flex; justify-content:space-between;">
+        <div>
+            <label for="midiOutput">MIDI-OUT</label>
+            <select id="midiOutput" [(ngModel)]="this.midiService.selectedMidiOutput" (change)="this.midiService.onSelectMidiOutputChange($event)" class="styled-select">
+                <option *ngFor="let output of this.midiService.aryMidiOutputs" [value]="output.id">
+                    {{ output.name }}
+                </option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="midiInput">MIDI-IN</label>
+            <select id="midiInput" [(ngModel)]="this.midiService.selectedMidiInput" (change)="this.midiService.onSelectMidiInputChange($event)" class="styled-select">
+                <option *ngFor="let input of this.midiService.aryMidiInputs" [value]="input.id">
+                    {{ input.name }}
+                </option>
+            </select>
+        </div>
+    </div>
+</div>
+
+
+<div class="device-selection" style="display:flex; justify-content:center;">
+    <div>
+        <label for="midiInput">MIDI CHANNEL</label>
+        <select id="channelSelect" [(ngModel)]="this.midiService.selectedChannel"  class="styled-select">
+            <option *ngFor="let channel of [].constructor(16); let i = index" [value]="i + 1">
+                Channel {{ i + 1 }}
+            </option>
+        </select>
+    </div>       
+</div>

@@ -1,9 +1,9 @@
 import { Component, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { morphControls, MorphControl } from './cc-morph';
-import { WebMidi, Output, Input } from 'webmidi';
-import { KnobModule } from 'primeng/knob';
+import { MidiService } from '../../midi-settings.service';
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel
+import { KnobModule } from 'primeng/knob';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @Component({
@@ -16,14 +16,12 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 })
 export class MorphComponent implements AfterViewInit {
   morphControls: MorphControl[] = morphControls;
-  midiOutput: Output | undefined;
-  midiInput: Input | undefined;
   selectedShiftValue: number = 64;
   isStyleToggleActive: boolean = false;  // Rinominato da isToggleActive a isStyleToggleActive
   morphStyleValue: number = 0; // Shared value between slider and knob
 
-  constructor(private cdr: ChangeDetectorRef) {
-    this.initializeMidiOutput();
+  constructor(private cdr: ChangeDetectorRef, private midiService: MidiService) {
+    // Non è più necessario inizializzare l'output MIDI qui
   }
 
   ngAfterViewInit() {}
@@ -55,7 +53,7 @@ export class MorphComponent implements AfterViewInit {
     if (morphControl) {
       morphControl.currentValue = newValue;
       this.isStyleToggleActive = false; // Imposta a false quando si cambia lo slider
-      this.sendMidiMessage(morphControl.cc, newValue);
+      this.midiService.sendControlChange(morphControl.cc, newValue); // Invia il messaggio MIDI tramite il servizio
       this.onKnobChange({ value: newValue }); // Sync the value with the knob
       this.cdr.detectChanges();
     }
@@ -69,7 +67,7 @@ export class MorphComponent implements AfterViewInit {
       morphControl.styles.forEach(style => {
         style.currentValue = style.id === value ? 20 : 0;
         if (style.id === value) {
-          this.sendMidiMessage(morphControl.cc, value);
+          this.midiService.sendControlChange(morphControl.cc, value); // Invia il messaggio MIDI tramite il servizio
           console.log(`Sending MIDI: CC ${morphControl.cc}, Value ${value}`);
           this.isStyleToggleActive = true; // Toggle attivato
         }
@@ -77,46 +75,6 @@ export class MorphComponent implements AfterViewInit {
       this.cdr.detectChanges();
     } else {
       console.warn('MorphStyleControl or its styles are undefined.');
-    }
-  }
-
-  sendMidiMessage(cc: number, value: number) {
-    if (this.midiOutput) {
-      this.midiOutput.sendControlChange(cc, value);
-      console.log(`Sent CC: ${cc}, Value: ${value}`);
-    } else {
-      console.warn('No MIDI output available to send messages.');
-    }
-  }
-
-  initializeMidiOutput() {
-    if (WebMidi.supported) {
-      WebMidi.enable()
-        .then(() => {
-          this.midiOutput = WebMidi.outputs.find(output =>
-            output.name.toLowerCase().startsWith('perform-ve')
-          );
-
-          if (this.midiOutput) {
-            console.log(`MIDI Output initialized: ${this.midiOutput.name}`);
-          } else {
-            console.warn('No suitable MIDI output found.');
-          }
-
-          this.midiInput = WebMidi.inputs.find(input =>
-            input.name.toLowerCase().startsWith('perform-ve')
-          );
-
-          if (this.midiInput) {
-            this.midiInput.addListener('controlchange', event => this.handleControlChange(event));
-            this.midiInput.addListener('sysex', event => this.handleSysEx(event));
-          } else {
-            console.warn('No suitable MIDI input found.');
-          }
-        })
-        .catch(err => console.error('WebMidi could not be enabled', err));
-    } else {
-      console.error('WebMIDI is not supported by this browser.');
     }
   }
 
@@ -156,15 +114,11 @@ export class MorphComponent implements AfterViewInit {
     }
   }
 
-  handleSysEx(event: any) {
-    console.log('SysEx message received:', event.data);
-  }
-
   onKnobChange(event: { value: number }) {
     this.morphStyleValue = event.value;
     const percentage = this.calculatePercentage(this.morphStyleValue);
     console.log(`Knob changed: ${this.morphStyleValue} (${percentage}%)`);
-    this.sendMidiMessage(this.morphStyleControl!.cc, this.morphStyleValue);
+    this.midiService.sendControlChange(this.morphStyleControl!.cc, this.morphStyleValue); // Invia il messaggio MIDI tramite il servizio
     this.cdr.detectChanges(); // Rileva le modifiche
   }
 

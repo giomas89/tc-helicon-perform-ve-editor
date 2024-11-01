@@ -1,0 +1,90 @@
+.amount-button {
+    margin: 0 10px; /* Aggiungi margine orizzontale */
+    padding: 5px 10px; /* Aggiungi padding per il bottone */
+    background-color: red; /* Colore di sfondo */
+    color: white; /* Colore del testo */
+    border: none; /* Rimuovi il bordo predefinito */
+    border-radius: 5px; /* Aggiungi un bordo arrotondato */
+    cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+  }
+  
+  .amount-button:hover {
+    background-color: rebeccapurple; /* Cambia colore al passaggio del mouse */
+  }
+  
+
+
+/* ===========================
+   Stile per i Bottoni delle Tonalità
+   =========================== */
+.key-buttons {
+    display: flex; /* Usa flexbox per allineare i bottoni in fila */
+    flex-direction: column; /* Mantieni i bottoni in colonna */
+}
+
+.key-buttons button {
+    flex: 1 0 calc(100% / 12 - 12px); /* Ogni bottone occupa 100% / 12 della larghezza */
+    height: 50px; /* Altezza dei bottoni */
+    border: 2px solid black; /* Outline nero quando non è attivo */
+    background-color: #fff; /* Sfondo trasparente */
+    color: black; /* Testo nero quando non è attivo */
+    cursor: pointer; /* Cambia il cursore al passaggio del mouse */
+    transition: background-color 0.3s, color 0.3s; /* Transizione per lo sfondo e il colore del testo */
+    box-sizing: border-box; /* Include il bordo e il padding nella larghezza totale */
+    margin: 0; /* Rimuovi margini per evitare sovrapposizioni */
+}
+
+/* Rimuovi il bordo sinistro per evitare sovrapposizioni */
+.key-buttons button + button {
+    border-left: none; 
+}
+
+/* Margine verticale per separare i bottoni */
+.key-buttons button {
+    margin-bottom: -2px; /* Piccolo margine negativo per sovrapporre i bordi */
+}
+
+.key-buttons button:first-child {
+    margin-bottom: 0; /* Nessun margine sotto il primo bottone */
+}
+
+.key-buttons button:last-child {
+    margin-top: 0; /* Nessun margine sopra l'ultimo bottone */
+    margin-right: 0; /* Non applicare il margine all'ultimo bottone */
+}
+
+.key-button-natural {
+    border-bottom: none !important;
+    min-height: 50px !important;
+}
+
+.key-button-chromatic {
+    border-top: none !important;
+    min-height: 50px !important;
+}
+
+.key-buttons button.active {
+  background-color: #4caf50; /* Colore di sfondo verde per attivo */
+  color: white; /* Testo bianco per il bottone attivo */
+}
+
+.key-buttons button.off {
+  background-color: #f44336; /* Colore di sfondo rosso per inattivo */
+  color: white; /* Testo bianco per il bottone inattivo */
+}
+
+/* Rimuovi o modifica il margine negativo */
+.key-buttons button {
+    margin-bottom: 0; /* Rimuovi margine per separare i bottoni */
+}
+
+/* Nuovo stile per il contenitore dei bottoni */
+.key-button-container {
+    display: flex;
+    margin: 0; /* Rimuovi margini esterni */
+}
+
+/* Separatore tra i gruppi di bottoni (se necessario) */
+.key-button-container + .key-button-container {
+    margin-top: 0; /* Regola il margine tra i div se necessario */
+}
