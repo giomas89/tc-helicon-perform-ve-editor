@@ -13,6 +13,7 @@ import { HardtuneComponent } from './Effects/hardtune/hardtune.component';
 import { XfxComponent } from './Effects/xfx/xfx.component';
 import { EchoComponent } from './Effects/echo/echo.component';
 import { FilterComponent } from './Effects/filter/filter.component';
+import { MidiSettingsComponent } from './midi-settings/midi-settings.component';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,7 @@ import { FilterComponent } from './Effects/filter/filter.component';
     CommonModule,
     FormsModule,
     TabViewModule,
+    MidiSettingsComponent,
     DoubleComponent,
     MorphComponent,
     HardtuneComponent,
