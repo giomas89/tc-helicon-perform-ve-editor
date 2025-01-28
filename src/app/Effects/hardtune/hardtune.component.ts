@@ -26,9 +26,9 @@ export class HardtuneComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeKeys();
     // Iscrivi al servizio per i messaggi MIDI ricevuti
-    this.midiMessageSubscription = this.midiService.midiMessageSubject.subscribe(message => {
-      this.handleIncomingMidiMessage(message);
-    });
+    // this.midiMessageSubscription = this.midiService.midiMessageSubject.subscribe(message => {
+    //   this.handleIncomingMidiMessage(message);
+    // });
   }
 
   ngOnDestroy(): void {
